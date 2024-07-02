@@ -29,6 +29,7 @@ void Scene_Main::update() {
 	sCollision();
 	sRender();
 
+	// git test
 	// overflow in like 400 days?
 	m_currentFrame++;
 }
