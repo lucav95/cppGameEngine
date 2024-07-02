@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Scene.cpp">
+      <Filter>src\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene_Main.cpp">
+      <Filter>src\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Vec2.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Scene.h">
+      <Filter>src\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene_Main.h">
+      <Filter>src\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec2.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{064d54c7-ef06-495e-b626-cc72bffe14f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scenes">
+      <UniqueIdentifier>{1b805185-31ee-48d3-bb59-6f555bf81496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine">
+      <UniqueIdentifier>{5125fe45-d0b8-49b0-b079-e20348a7e55b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\doc">
+      <UniqueIdentifier>{1e26a77f-edf8-48b2-ad06-676e832497ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="todo.md">
+      <Filter>src\doc</Filter>
+    </None>
+  </ItemGroup>
+</Project>

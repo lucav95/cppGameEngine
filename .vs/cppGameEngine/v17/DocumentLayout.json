@@ -1,0 +1,85 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\Scene_Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|solutionrelative:Scene_Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\todo.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|solutionrelative:todo.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\Scene_Main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|solutionrelative:Scene_Main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\GameEngine.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{41913505-0F7B-45E0-977E-DC3A6B907123}|TestProject.vcxproj|solutionrelative:GameEngine.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "todo.md",
+              "DocumentMoniker": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\todo.md",
+              "RelativeDocumentMoniker": "todo.md",
+              "ToolTip": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\todo.md",
+              "RelativeToolTip": "todo.md",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2024-07-01T14:37:50.736Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Scene_Main.h",
+              "DocumentMoniker": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\Scene_Main.h",
+              "RelativeDocumentMoniker": "Scene_Main.h",
+              "ToolTip": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\Scene_Main.h",
+              "RelativeToolTip": "Scene_Main.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB0AAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-07-01T13:45:03.687Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Scene_Main.cpp",
+              "DocumentMoniker": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\Scene_Main.cpp",
+              "RelativeDocumentMoniker": "Scene_Main.cpp",
+              "ToolTip": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\Scene_Main.cpp",
+              "RelativeToolTip": "Scene_Main.cpp",
+              "ViewState": "AQIAAKIAAAAAAAAAAAAAAKUAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-07-01T10:52:14.598Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "GameEngine.cpp",
+              "DocumentMoniker": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\GameEngine.cpp",
+              "RelativeDocumentMoniker": "GameEngine.cpp",
+              "ToolTip": "C:\\Users\\lucav\\Documents\\CPP_Projekte\\cppGameEngine\\GameEngine.cpp",
+              "RelativeToolTip": "GameEngine.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-07-01T12:56:23.244Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

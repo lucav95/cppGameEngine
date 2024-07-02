@@ -1,0 +1,48 @@
+﻿  Action.cpp
+  Animation.cpp
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,70): warning C4244: 'argument': conversion from 'float' to 'T', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,70): warning C4244:         with
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,70): warning C4244:         [
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,70): warning C4244:             T=int
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,70): warning C4244:         ]
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,55): warning C4244: 'argument': conversion from 'float' to 'T', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,55): warning C4244:         with
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,55): warning C4244:         [
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,55): warning C4244:             T=int
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(16,55): warning C4244:         ]
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,101): warning C4244: 'argument': conversion from 'float' to 'T', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,101): warning C4244:         with
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,101): warning C4244:         [
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,101): warning C4244:             T=int
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,101): warning C4244:         ]
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,86): warning C4244: 'argument': conversion from 'float' to 'T', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,86): warning C4244:         with
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,86): warning C4244:         [
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,86): warning C4244:             T=int
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,86): warning C4244:         ]
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,38): warning C4244: 'argument': conversion from 'float' to 'T', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,38): warning C4244:         with
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,38): warning C4244:         [
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,38): warning C4244:             T=int
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Animation.cpp(22,38): warning C4244:         ]
+  Assets.cpp
+  Entity.cpp
+  EntityManager.cpp
+  GameEngine.cpp
+  main.cpp
+  Scene.cpp
+  Scene_Main.cpp
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(144,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(148,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(152,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(156,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(161,40): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(162,40): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Vec2.cpp
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Vec2.cpp(57,13): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Generating code
+  990 of 999 functions (99.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    2 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  TestProject.vcxproj -> C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\x64\Release\cppGameEngine.exe

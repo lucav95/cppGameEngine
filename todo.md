@@ -1,0 +1,11 @@
+- [ ] Hängenbleiben bei mehreren BoundingBoxes verhindern
+- [ ] Moonwalking beheben
+- [ ] bitwise comparison nachschauen
+- [ ] Vorwärtskompatibilität nachschauen
+- [ ] const verhalten an Methodenköpfen nachschauen
+- [ ] Action name und type in enums
+- [X] Animation an Bewegungen anpassen
+- [X] aus config datei lesen
+- [ ] map + kamera
+- [ ] dialog
+- [ ] scene (kampf?)
