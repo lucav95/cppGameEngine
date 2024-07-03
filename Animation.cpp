@@ -33,3 +33,7 @@ const Vec2& Animation::getSize() const {
 const sf::Sprite& Animation::getSprite() const {
 	return m_sprite;
 }
+
+bool Animation::hasEnded() const {
+	return m_currentFrame == m_frameCount - 1;
+}
