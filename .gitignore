@@ -6,3 +6,6 @@
 *.sln.docstates
 x64/
 todo.md
+cppGameEngine/
+*.filters
+*.vcxproj
