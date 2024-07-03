@@ -1,5 +1,6 @@
 #include "Scene_Main.h"
 #include "GameEngine.h"
+#include "Physics.h"
 #include <iostream>
 
 Scene_Main::Scene_Main(GameEngine* game)
@@ -29,8 +30,6 @@ void Scene_Main::update() {
 	sCollision();
 	sRender();
 
-	// git test
-	// overflow in like 400 days?
 	m_currentFrame++;
 }
 
@@ -46,14 +45,14 @@ void Scene_Main::sRender() {
 			rect.setFillColor(sf::Color(255, 0, 0));
 			rect.setOutlineColor(sf::Color(0, 0, 255));
 			rect.setPosition(sf::Vector2f(
-				entityTransform.pos.x - entityBoundingBox.halfSize.x,
-				entityTransform.pos.y - entityBoundingBox.halfSize.y));
+				entityTransform.getPos().x - entityBoundingBox.halfSize.x,
+				entityTransform.getPos().y - entityBoundingBox.halfSize.y));
 			rect.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
 			m_game->getWindow().draw(rect);
 
 			sf::RectangleShape point;
 			point.setFillColor(sf::Color(0, 255, 0));
-			point.setPosition(sf::Vector2f(entityTransform.pos.x -1, entityTransform.pos.y -1));
+			point.setPosition(sf::Vector2f(entityTransform.getPos().x - 1, entityTransform.getPos().y - 1));
 			point.setSize(sf::Vector2f(3, 3));
 			m_game->getWindow().draw(point);
 		}
@@ -71,8 +70,8 @@ void Scene_Main::sRender() {
 				player.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
 			}
 			player.setPosition(
-				m_player->getComponent<CTransform>().pos.x - m_player->getComponent<CBoundingBox>().halfSize.x,
-				m_player->getComponent<CTransform>().pos.y - m_player->getComponent<CBoundingBox>().halfSize.y);
+				m_player->getComponent<CTransform>().getPos().x - m_player->getComponent<CBoundingBox>().halfSize.x,
+				m_player->getComponent<CTransform>().getPos().y - m_player->getComponent<CBoundingBox>().halfSize.y);
 			m_game->getWindow().draw(player);
 		}
 		
@@ -88,9 +87,12 @@ void Scene_Main::sCollision() {
 
 		auto& enemyTransform = enemy->getComponent<CTransform>();
 
+		//Vec2 overlap = Physics::getOverlap(m_player, enemy);
+		//Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, enemy);
+
 		Vec2 delta = Vec2(
-			abs(playerTransform.pos.x - enemyTransform.pos.x),
-			abs(playerTransform.pos.y - enemyTransform.pos.y));
+			abs(playerTransform.getPos().x - enemyTransform.getPos().x),
+			abs(playerTransform.getPos().y - enemyTransform.getPos().y));
 		float xOverlap = m_player->getComponent<CBoundingBox>().halfSize.x + enemy->getComponent<CBoundingBox>().halfSize.x - delta.x;
 		float yOverlap = m_player->getComponent<CBoundingBox>().halfSize.y + enemy->getComponent<CBoundingBox>().halfSize.y - delta.y;
 
@@ -98,23 +100,23 @@ void Scene_Main::sCollision() {
 			bool vertically = m_enemyLastOverlap[enemy].x > 0;
 			bool horizontally = m_enemyLastOverlap[enemy].y > 0;
 			// came right
-			if (horizontally && playerTransform.pos.x > enemyTransform.pos.x) {
-				playerTransform.pos.x += xOverlap;
+			if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
+				playerTransform.setX(playerTransform.getPos().x + xOverlap);
 				xOverlap = 0;
 			}
 			// came left
-			else if (horizontally && playerTransform.pos.x < enemyTransform.pos.x) {
-				playerTransform.pos.x -= xOverlap;
+			else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
+				playerTransform.setX(playerTransform.getPos().x - xOverlap);
 				xOverlap = 0;
 			}
 			// came top
-			else if (vertically && playerTransform.pos.y < enemyTransform.pos.y) {
-				playerTransform.pos.y -= yOverlap;
+			else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
+				playerTransform.setY(playerTransform.getPos().y - yOverlap);
 				yOverlap = 0;
 			}
 			//came bottom
-			else if (vertically && playerTransform.pos.y > enemyTransform.pos.y) {
-				playerTransform.pos.y += yOverlap;
+			else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
+				playerTransform.setY(playerTransform.getPos().y + yOverlap);
 				yOverlap = 0;
 			}
 		}
@@ -174,8 +176,9 @@ void Scene_Main::sMovement() {
 		playerTransform.velocity.y = y / 1.4;
 	}
 
-	playerTransform.pos.x += playerTransform.velocity.x;
-	playerTransform.pos.y += playerTransform.velocity.y;
+	playerTransform.setPosition(
+		playerTransform.getPos().x + playerTransform.velocity.x,
+		playerTransform.getPos().y + playerTransform.velocity.y);
 }
 
 void Scene_Main::sDoAction(const Action& action) {

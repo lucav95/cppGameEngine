@@ -7,6 +7,7 @@ void Assets::addTexture(const std::string& name, const std::string& path) {
 		std::cout << "Could not load texture: " << path << "\n";
 		return;
 	}
+	std::cout << "Texture loaded: " << path << "\n";
 	m_textures[name] = texture;
 }
 
@@ -20,6 +21,7 @@ void Assets::addSound(const std::string& name, const std::string& path) {
 		std::cout << "Cound not load sound: " << path << "\n";
 		return;
 	}
+	std::cout << "Sound loaded: " << path << "\n";
 	sf::Sound sound;
 	sound.setBuffer(buffer);
 	m_sounds[name] = sound;
@@ -31,6 +33,7 @@ void Assets::addFont(const std::string& name, const std::string& path) {
 		std::cout << "Could not load font: " << path << "\n";
 		return;
 	}
+	std::cout << "Font loaded: " << path << "\n";
 	m_fonts[name] = font;
 }
 

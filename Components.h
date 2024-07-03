@@ -10,12 +10,33 @@ public:
 };
 
 class CTransform : public Component {
-public:
 	Vec2 pos = { 0.0, 0.0 };
 	Vec2 prevPos = { 0.0, 0.0 };
+public:
 	Vec2 scale = { 1.0, 1.0 };
 	Vec2 velocity = { 0.0, 0.0 };
 	float angle = 0;
+
+	void setX(float x) {
+		prevPos.x = pos.x;
+		pos.x = x;
+	}
+
+	void setY(float y) {
+		prevPos.y = pos.y;
+		pos.y = y;
+	}
+
+	void setPosition(float x, float y) {
+		prevPos.x = pos.x;
+		prevPos.y = pos.y;
+		pos.x = x;
+		pos.y = y;
+	}
+
+	Vec2& getPos() { return pos; }
+	Vec2& getPrevPos() { return prevPos; }
+
 	CTransform() {}
 	CTransform(const Vec2& p, const Vec2& v, float a) 
 		: pos(p), velocity(v), angle(a) {}
