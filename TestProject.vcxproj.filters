@@ -31,6 +31,9 @@
     <ClCompile Include="Assets.cpp">
       <Filter>src\engine</Filter>
     </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -61,6 +64,9 @@
       <Filter>src\engine</Filter>
     </ClInclude>
     <ClInclude Include="Vec2.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
       <Filter>src\engine</Filter>
     </ClInclude>
   </ItemGroup>

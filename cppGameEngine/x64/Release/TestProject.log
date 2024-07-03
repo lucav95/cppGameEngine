@@ -1,13 +1,17 @@
-﻿  Scene_Main.cpp
-C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(145,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(149,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(153,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(157,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(162,40): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(163,40): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+﻿  Entity.cpp
+  EntityManager.cpp
+  GameEngine.cpp
+  main.cpp
+  Scene.cpp
+  Scene_Main.cpp
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(156,32): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(160,32): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(164,32): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(168,32): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(173,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\Scene_Main.cpp(174,34): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Generating code
-  1 of 999 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB and IOBJ mismatch, fall back to full compilation.
+  All 944 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   TestProject.vcxproj -> C:\Users\lucav\Documents\CPP_Projekte\cppGameEngine\x64\Release\cppGameEngine.exe

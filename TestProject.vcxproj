@@ -140,6 +140,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scene_Main.cpp" />
     <ClCompile Include="Vec2.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="Scene_Main.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Vec2.h" />
