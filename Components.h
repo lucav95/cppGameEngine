@@ -39,7 +39,7 @@ public:
 
 	CTransform() {}
 	CTransform(const Vec2& p, const Vec2& v, float a) 
-		: pos(p), velocity(v), angle(a) {}
+		: pos(p), prevPos(p), velocity(v), angle(a) {}
 };
 
 class CBoundingBox : public Component {

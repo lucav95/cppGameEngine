@@ -87,42 +87,29 @@ void Scene_Main::sCollision() {
 
 		auto& enemyTransform = enemy->getComponent<CTransform>();
 
-		//Vec2 overlap = Physics::getOverlap(m_player, enemy);
-		//Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, enemy);
+		Vec2 overlap = Physics::getOverlap(m_player, enemy);
+		Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, enemy);
 
-		Vec2 delta = Vec2(
-			abs(playerTransform.getPos().x - enemyTransform.getPos().x),
-			abs(playerTransform.getPos().y - enemyTransform.getPos().y));
-		float xOverlap = m_player->getComponent<CBoundingBox>().halfSize.x + enemy->getComponent<CBoundingBox>().halfSize.x - delta.x;
-		float yOverlap = m_player->getComponent<CBoundingBox>().halfSize.y + enemy->getComponent<CBoundingBox>().halfSize.y - delta.y;
-
-		if (xOverlap >= 0 && yOverlap >= 0) {
-			bool vertically = m_enemyLastOverlap[enemy].x > 0;
-			bool horizontally = m_enemyLastOverlap[enemy].y > 0;
+		if (overlap.x >= 0 && overlap.y >= 0) {
+			bool vertically = lastOverlap.x > 0;
+			bool horizontally = lastOverlap.y > 0;
 			// came right
 			if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
-				playerTransform.setX(playerTransform.getPos().x + xOverlap);
-				xOverlap = 0;
+				playerTransform.setX(playerTransform.getPos().x + overlap.x);
 			}
 			// came left
 			else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
-				playerTransform.setX(playerTransform.getPos().x - xOverlap);
-				xOverlap = 0;
+				playerTransform.setX(playerTransform.getPos().x - overlap.x);
 			}
 			// came top
 			else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
-				playerTransform.setY(playerTransform.getPos().y - yOverlap);
-				yOverlap = 0;
+				playerTransform.setY(playerTransform.getPos().y - overlap.y);
 			}
 			//came bottom
 			else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
-				playerTransform.setY(playerTransform.getPos().y + yOverlap);
-				yOverlap = 0;
+				playerTransform.setY(playerTransform.getPos().y + overlap.y);
 			}
 		}
-
-		m_enemyLastOverlap[enemy].x = xOverlap;
-		m_enemyLastOverlap[enemy].y = yOverlap;
 	}
 }
 

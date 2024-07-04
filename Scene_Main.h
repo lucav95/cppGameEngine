@@ -2,8 +2,6 @@
 
 #include "Scene.h"
 
-typedef std::map<std::shared_ptr<Entity>, Vec2> EntityVec2Map;
-
 class Scene_Main : public Scene {
 
 	Vec2					m_playerBox = Vec2(0.0f, 0.0f);
@@ -12,8 +10,6 @@ class Scene_Main : public Scene {
 	std::string				m_playerStandingTexture = "player";
 
 	std::shared_ptr<Entity> m_player;
-
-	EntityVec2Map			m_enemyLastOverlap;
 
 	void					init();
 
