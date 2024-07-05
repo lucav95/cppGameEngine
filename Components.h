@@ -72,8 +72,9 @@ public:
 class CAnimation : public Component {
 public:
 	Animation animation;
+	bool repeat = false;
 	CAnimation() {}
-	CAnimation(Animation& animation) : animation(animation) {}
+	CAnimation(Animation& animation, bool repeat) : animation(animation), repeat(repeat) {}
 };
 
 class CState : public Component {

@@ -60,21 +60,20 @@ void Scene_Main::sRender() {
 
 			auto& playerInput = m_player->getComponent<CInput>();
 
-			sf::RectangleShape player(sf::Vector2f(80, 80));
+			sf::RectangleShape playerRect(sf::Vector2f(80, 80));
 			if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
-				player.setTexture(m_game->getAssets().getAnimation(m_playerAnimation).getSprite().getTexture());
-				player.setTextureRect(m_game->getAssets().getAnimation(m_playerAnimation).getSprite().getTextureRect());
-				m_game->getAssets().getAnimation(m_playerAnimation).update();
+				playerRect.setTexture(m_player->getComponent<CAnimation>().animation.getSprite().getTexture());
+				playerRect.setTextureRect(m_player->getComponent<CAnimation>().animation.getSprite().getTextureRect());
+				m_player->getComponent<CAnimation>().animation.update();
 			}
 			else {
-				player.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
+				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
 			}
-			player.setPosition(
+			playerRect.setPosition(
 				m_player->getComponent<CTransform>().getPos().x - m_player->getComponent<CBoundingBox>().halfSize.x,
 				m_player->getComponent<CTransform>().getPos().y - m_player->getComponent<CBoundingBox>().halfSize.y);
-			m_game->getWindow().draw(player);
+			m_game->getWindow().draw(playerRect);
 		}
-		
 	}
 	m_game->getWindow().display();
 }
@@ -129,6 +128,7 @@ void Scene_Main::spawnPlayer() {
 	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
 	entity->addComponent<CBoundingBox>(Vec2(80.0f, 80.0f));
 	entity->addComponent<CInput>();
+	entity->addComponent<CAnimation>();
 	m_player = entity;
 }
 
@@ -179,7 +179,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	if (action.getName() == "UP") {
 		if (action.getType() == "START") {
 			playerInput.up = true;
-			m_playerAnimation = "player_animation_up";
+			changeAnimation(m_player, "player_animation_up", true);
 		}
 		if (action.getType() == "END") {
 			checkAnimationDirections(false, true, true, true);
@@ -191,7 +191,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	if (action.getName() == "DOWN") {
 		if (action.getType() == "START") {
 			playerInput.down = true;
-			m_playerAnimation = "player_animation";
+			changeAnimation(m_player, "player_animation", true);
 		}
 		if (action.getType() == "END") {
 			checkAnimationDirections(true, false, true, true);
@@ -203,7 +203,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	if (action.getName() == "LEFT") {
 		if (action.getType() == "START") {
 			playerInput.left = true;
-			m_playerAnimation = "player_animation_left";
+			changeAnimation(m_player, "player_animation_left", true);
 		}
 		if (action.getType() == "END") {
 			checkAnimationDirections(true, true, false, true);
@@ -215,7 +215,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	if (action.getName() == "RIGHT") {
 		if (action.getType() == "START") {
 			playerInput.right = true;
-			m_playerAnimation = "player_animation_right";
+			changeAnimation(m_player, "player_animation_right", true);
 		}
 		if (action.getType() == "END") {
 			checkAnimationDirections(true, true, true, false);
@@ -231,16 +231,25 @@ void Scene_Main::checkAnimationDirections(bool up, bool down, bool left, bool ri
 	auto& playerInput = m_player->getComponent<CInput>();
 
 	if (up && playerInput.up) {
-		m_playerAnimation = "player_animation_up";
+		changeAnimation(m_player, "player_animation_up", true);
 	}
 	if (left && playerInput.left) {
-		m_playerAnimation = "player_animation_left";
+		changeAnimation(m_player, "player_animation_left", true);
 	}
 	if (down && playerInput.down) {
-		m_playerAnimation = "player_animation";
+		changeAnimation(m_player, "player_animation", true);
 	}
 	if (right && playerInput.right) {
-		m_playerAnimation = "player_animation_right";
+		changeAnimation(m_player, "player_animation_right", true);
+	}
+}
+
+void Scene_Main::changeAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat) {
+	if (!entity->hasComponent<CAnimation>()) {
+		return;
+	}
+	if (entity->getComponent<CAnimation>().animation.getName() != animationName) {
+		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName), true);
 	}
 }
 

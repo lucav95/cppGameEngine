@@ -31,7 +31,7 @@ public:
 	bool							isActive() const;
 	void							destroy();
 
-	template<typename T> bool hasComponent() const {
+	template<typename T> bool hasComponent() {
 		return getComponent<T>().has;
 	}
 
