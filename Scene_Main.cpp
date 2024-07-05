@@ -62,9 +62,15 @@ void Scene_Main::sRender() {
 
 			sf::RectangleShape playerRect(sf::Vector2f(80, 80));
 			if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
-				playerRect.setTexture(m_player->getComponent<CAnimation>().animation.getSprite().getTexture());
-				playerRect.setTextureRect(m_player->getComponent<CAnimation>().animation.getSprite().getTextureRect());
-				m_player->getComponent<CAnimation>().animation.update();
+
+				auto& animationComponent = m_player->getComponent<CAnimation>();
+				playerRect.setTexture(animationComponent.animation.getSprite().getTexture());
+				playerRect.setTextureRect(animationComponent.animation.getSprite().getTextureRect());
+				// UGLY
+				if (animationComponent.repeat || (!animationComponent.repeat && !animationComponent.animation.hasEnded())) {
+					animationComponent.animation.update();
+				}
+
 			}
 			else {
 				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
@@ -249,7 +255,7 @@ void Scene_Main::changeAnimation(std::shared_ptr<Entity> entity, const std::stri
 		return;
 	}
 	if (entity->getComponent<CAnimation>().animation.getName() != animationName) {
-		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName), true);
+		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName), repeat);
 	}
 }
 
