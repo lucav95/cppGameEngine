@@ -18,6 +18,10 @@ void Scene_Main::init() {
 	spawnEnemy(300.0f, 300.0f);
 	spawnEnemy(300.0f, 464.0f);
 	spawnPlayer();
+	m_camera = sf::View(
+		sf::Vector2f(m_game->getWindow().getSize().x / 2, m_game->getWindow().getSize().y / 2), 
+		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
+	m_game->getWindow().setView(m_camera);
 }
 
 void Scene_Main::update() {
@@ -30,6 +34,9 @@ void Scene_Main::update() {
 	sCollision();
 	sRender();
 
+	m_camera.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().getPos().x, m_player->getComponent<CTransform>().getPos().y));
+	m_game->getWindow().setView(m_camera);
+
 	m_currentFrame++;
 }
 
@@ -37,27 +44,10 @@ void Scene_Main::sRender() {
 	m_game->getWindow().clear();
 	for (auto e : m_entities.getEntities()) {
 
-		auto& entityBoundingBox = e->getComponent<CBoundingBox>();
 		auto& entityTransform = e->getComponent<CTransform>();
 		
-		if (e->getTag() != "player") {
-			sf::RectangleShape rect;
-			rect.setFillColor(sf::Color(255, 0, 0));
-			rect.setOutlineColor(sf::Color(0, 0, 255));
-			rect.setPosition(sf::Vector2f(
-				entityTransform.getPos().x - entityBoundingBox.halfSize.x,
-				entityTransform.getPos().y - entityBoundingBox.halfSize.y));
-			rect.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
-			m_game->getWindow().draw(rect);
-
-			sf::RectangleShape point;
-			point.setFillColor(sf::Color(0, 255, 0));
-			point.setPosition(sf::Vector2f(entityTransform.getPos().x - 1, entityTransform.getPos().y - 1));
-			point.setSize(sf::Vector2f(3, 3));
-			m_game->getWindow().draw(point);
-		}
-		else {
-
+		if (e->getTag() == "player") {
+		
 			auto& playerInput = m_player->getComponent<CInput>();
 
 			sf::RectangleShape playerRect(sf::Vector2f(80, 80));
@@ -66,23 +56,46 @@ void Scene_Main::sRender() {
 				auto& animationComponent = m_player->getComponent<CAnimation>();
 				playerRect.setTexture(animationComponent.animation.getSprite().getTexture());
 				playerRect.setTextureRect(animationComponent.animation.getSprite().getTextureRect());
-				// UGLY
+				
 				if (animationComponent.repeat || (!animationComponent.repeat && !animationComponent.animation.hasEnded())) {
 					animationComponent.animation.update();
 				}
-
 			}
 			else {
 				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
 			}
 			playerRect.setPosition(
-				m_player->getComponent<CTransform>().getPos().x - m_player->getComponent<CBoundingBox>().halfSize.x,
-				m_player->getComponent<CTransform>().getPos().y - m_player->getComponent<CBoundingBox>().halfSize.y);
+				entityTransform.getPos().x - (playerRect.getSize().x / 2),
+				entityTransform.getPos().y - (playerRect.getSize().y / 2));
+			// Maybe draw the sprite without the playerRect
 			m_game->getWindow().draw(playerRect);
+
 		}
+		renderBoundingBox(e);
 	}
 	m_game->getWindow().display();
 }
+
+void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
+	auto& entityBoundingBox = entity->getComponent<CBoundingBox>();
+	auto& entityTransform = entity->getComponent<CTransform>();
+
+	sf::RectangleShape boundingBox;
+		boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
+		boundingBox.setOutlineColor(sf::Color(0, 0, 255));
+		boundingBox.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
+		boundingBox.setPosition(
+			entityTransform.getPos().x - (boundingBox.getSize().x / 2) + entityBoundingBox.relativePosition.x,
+			entityTransform.getPos().y - (boundingBox.getSize().y / 2) + entityBoundingBox.relativePosition.y);
+	m_game->getWindow().draw(boundingBox);
+
+	sf::RectangleShape point;
+	point.setFillColor(sf::Color(0, 255, 0));
+	point.setPosition(sf::Vector2f(entityTransform.getPos().x - 1, entityTransform.getPos().y - 1));
+	point.setSize(sf::Vector2f(3, 3));
+	m_game->getWindow().draw(point);
+}
+
 
 void Scene_Main::sCollision() {
 
@@ -122,7 +135,7 @@ void Scene_Main::spawnEnemy(float x, float y) {
 	auto enemy = m_entities.addEntity("enemy");
 
 	enemy->addComponent<CTransform>(Vec2(x, y), Vec2(0.0f, 0.0f), 0.0f);
-	enemy->addComponent<CBoundingBox>(Vec2(100.0f, 100.0f));
+	enemy->addComponent<CBoundingBox>(Vec2(100.0f, 100.0f), Vec2(0, 0));
 }
 
 void Scene_Main::spawnPlayer() {
@@ -132,7 +145,7 @@ void Scene_Main::spawnPlayer() {
 	float mid_y = m_game->getWindow().getSize().y / 2.0f;
 
 	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
-	entity->addComponent<CBoundingBox>(Vec2(80.0f, 80.0f));
+	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
 	entity->addComponent<CAnimation>();
 	m_player = entity;
@@ -250,7 +263,7 @@ void Scene_Main::checkAnimationDirections(bool up, bool down, bool left, bool ri
 	}
 }
 
-void Scene_Main::changeAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat) {
+void Scene_Main::changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName, bool repeat) {
 	if (!entity->hasComponent<CAnimation>()) {
 		return;
 	}
