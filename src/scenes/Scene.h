@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "EntityManager.h"
-#include "Action.h"
+#include "../engine/entity/EntityManager.h"
+#include "../engine/Action.h"
 
 // forward declaration
 class GameEngine;

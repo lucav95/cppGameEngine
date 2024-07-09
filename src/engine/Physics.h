@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Vec2.h"
-#include "Entity.h"
+#include "../engine/entity/Entity.h"
 #include <memory>
 
 class Physics {

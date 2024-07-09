@@ -1,5 +1,5 @@
 #include "GameEngine.h"
-#include "Scene_Main.h"
+#include "../scenes/Scene_Main.h"
 #include <iostream>
 #include <fstream>
 

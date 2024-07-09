@@ -1,6 +1,6 @@
 #include "Scene_Main.h"
-#include "GameEngine.h"
-#include "Physics.h"
+#include "../engine/GameEngine.h"
+#include "../engine/Physics.h"
 #include <iostream>
 
 Scene_Main::Scene_Main(GameEngine* game)
