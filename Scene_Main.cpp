@@ -14,20 +14,25 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::D, "RIGHT");
 	registerAction(sf::Keyboard::Escape, "PAUSE");
+	registerAction(sf::Keyboard::P, "DEBUG");
 
 	spawnEnemy(300.0f, 300.0f);
 	spawnEnemy(300.0f, 464.0f);
+	spawnDoor(500.0f, 100.0f);
 	spawnPlayer();
 	m_camera = sf::View(
 		sf::Vector2f(m_game->getWindow().getSize().x / 2, m_game->getWindow().getSize().y / 2), 
 		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
 	m_game->getWindow().setView(m_camera);
+
+	m_game->setDebugMode(true);
 }
 
 void Scene_Main::update() {
 	if (m_paused) {
 		return;
 	}
+
 	m_entities.update();
 	//sEnemySpawner();
 	sMovement();
@@ -42,6 +47,13 @@ void Scene_Main::update() {
 
 void Scene_Main::sRender() {
 	m_game->getWindow().clear();
+
+	// background
+	sf::RectangleShape background(sf::Vector2f(1500, 1500));
+	background.setFillColor(sf::Color(32, 32, 32));
+	background.setPosition(-200, -200);
+	m_game->getWindow().draw(background);
+
 	for (auto e : m_entities.getEntities()) {
 
 		auto& entityTransform = e->getComponent<CTransform>();
@@ -71,7 +83,20 @@ void Scene_Main::sRender() {
 			m_game->getWindow().draw(playerRect);
 
 		}
-		renderBoundingBox(e);
+
+		if (e->getTag() == "door") {
+			sf::RectangleShape door(sf::Vector2f(90.0f, 130.0f));
+			door.setPosition(
+				e->getComponent<CTransform>().getPos().x - (door.getSize().x / 2),
+				e->getComponent<CTransform>().getPos().y - (door.getSize().y / 2));
+			door.setTexture(&m_game->getAssets().getTexture("door"));
+			m_game->getWindow().draw(door);
+		}
+
+
+		if (m_game->isDebugMode()) {
+			renderBoundingBox(e);
+		}
 	}
 	m_game->getWindow().display();
 }
@@ -129,26 +154,16 @@ void Scene_Main::sCollision() {
 			}
 		}
 	}
-}
 
-void Scene_Main::spawnEnemy(float x, float y) {
-	auto enemy = m_entities.addEntity("enemy");
+	auto& door = m_entities.getEntities("door")[0];
+	Vec2 doorCollision = Physics::getOverlap(m_player, door);
+	if (doorCollision.x > 0 && doorCollision.y > 0) {
+		m_player->getComponent<CTransform>().setPosition(500.0f, 500.0f);
 
-	enemy->addComponent<CTransform>(Vec2(x, y), Vec2(0.0f, 0.0f), 0.0f);
-	enemy->addComponent<CBoundingBox>(Vec2(100.0f, 100.0f), Vec2(0, 0));
-}
+		m_camera.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().getPos().x, m_player->getComponent<CTransform>().getPos().y));
+		m_game->getWindow().setView(m_camera);
+	}
 
-void Scene_Main::spawnPlayer() {
-	auto entity = m_entities.addEntity("player");
-
-	float mid_x = m_game->getWindow().getSize().x / 2.0f;
-	float mid_y = m_game->getWindow().getSize().y / 2.0f;
-
-	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
-	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
-	entity->addComponent<CInput>();
-	entity->addComponent<CAnimation>();
-	m_player = entity;
 }
 
 void Scene_Main::sMovement() {
@@ -242,6 +257,12 @@ void Scene_Main::sDoAction(const Action& action) {
 			playerInput.right = false;
 		}
 	}
+
+	if (action.getName() == "DEBUG") {
+		if (action.getType() == "END") {
+			m_game->setDebugMode(!m_game->isDebugMode());
+		}
+	}
 }
 
 // if multiple direction were pressed, the animation would be stuck on the last released direction
@@ -270,6 +291,32 @@ void Scene_Main::changeAnimation(const std::shared_ptr<Entity>& entity, const st
 	if (entity->getComponent<CAnimation>().animation.getName() != animationName) {
 		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName), repeat);
 	}
+}
+
+void Scene_Main::spawnEnemy(float x, float y) {
+	auto enemy = m_entities.addEntity("enemy");
+
+	enemy->addComponent<CTransform>(Vec2(x, y), Vec2(0.0f, 0.0f), 0.0f);
+	enemy->addComponent<CBoundingBox>(Vec2(100.0f, 100.0f));
+}
+
+void Scene_Main::spawnPlayer() {
+	auto entity = m_entities.addEntity("player");
+
+	float mid_x = m_game->getWindow().getSize().x / 2.0f;
+	float mid_y = m_game->getWindow().getSize().y / 2.0f;
+
+	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
+	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
+	entity->addComponent<CInput>();
+	entity->addComponent<CAnimation>();
+	m_player = entity;
+}
+
+void Scene_Main::spawnDoor(float x, float y) {
+	auto door = m_entities.addEntity("door");
+	door->addComponent<CTransform>(Vec2(x, y), Vec2(0, 0), 0);
+	door->addComponent<CBoundingBox>(Vec2(90.0f, 130.0f));
 }
 
 void Scene_Main::onEnd() {

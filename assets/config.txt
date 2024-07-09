@@ -2,6 +2,7 @@ TEX assets/textures/player1.png player
 TEX assets/textures/player1_left.png player_left
 TEX assets/textures/player1_right.png player_right
 TEX assets/textures/player1_up.png player_up
+TEX assets/textures/door.png door
 ANI assets/textures/player_animation.png player_animation 4 10
 ANI assets/textures/player_animation_left.png player_animation_left 4 10
 ANI assets/textures/player_animation_up.png player_animation_up 4 10

@@ -75,6 +75,14 @@ void GameEngine::quit() {
 	m_running = false;
 }
 
+void GameEngine::setDebugMode(bool debug) {
+	m_debugMode = debug;
+}
+
+bool GameEngine::isDebugMode() const {
+	return m_debugMode;
+}
+
 bool GameEngine::isRunning() {
 	return m_running & m_window.isOpen(); // bit-wise comparison?
 }

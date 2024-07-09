@@ -25,6 +25,7 @@ class Scene_Main : public Scene {
 
 	void					spawnPlayer();
 	void					spawnEnemy(float x, float y);
+	void					spawnDoor(float x, float y);
 
 public:
 	Scene_Main(GameEngine* game);

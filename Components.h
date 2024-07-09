@@ -46,8 +46,10 @@ class CBoundingBox : public Component {
 public:
 	Vec2 size;
 	Vec2 halfSize;
-	Vec2 relativePosition;
+	Vec2 relativePosition = Vec2(0, 0);
+
 	CBoundingBox() {}
+	CBoundingBox(const Vec2& s) : size(s), halfSize(s.x / 2, s.y / 2) {}
 	CBoundingBox(const Vec2& s, const Vec2& rP) 
 		: size(s), halfSize(s.x / 2, s.y / 2), relativePosition(rP) {}
 };

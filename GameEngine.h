@@ -11,6 +11,7 @@ class GameEngine {
 	sf::RenderWindow		m_window;
 	std::string				m_currentScene;
 	bool					m_running = true;
+	bool					m_debugMode = false;
 
 	std::shared_ptr<Scene>	getCurrentScene();
 	void					init(const std::string& configPath);
@@ -30,4 +31,6 @@ public:
 	void					run();
 	void					quit();
 	bool					isRunning();
+	bool					isDebugMode() const;
+	void					setDebugMode(bool debug);
 };
