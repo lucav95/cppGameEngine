@@ -18,6 +18,7 @@ class Scene_Main : public Scene {
 	void					checkAnimationDirections(bool up, bool down, bool left, bool right);
 	void					changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName, bool repeat);
 	void					renderBoundingBox(const std::shared_ptr<Entity>& entity);
+	void					cameraToPlayer();
 	
 	//systems
 	void					sMovement(); 

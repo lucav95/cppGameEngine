@@ -1,5 +1,5 @@
 #include "GameEngine.h"
-#include "../scenes/Scene_Main.h"
+#include "../scenes/Scene_Menu.h"
 #include <iostream>
 #include <fstream>
 
@@ -13,7 +13,7 @@ void GameEngine::init(const std::string& configPath) {
 	m_window.create(sf::VideoMode(1280, 720), "Game");
 	m_window.setFramerateLimit(60);
 
-	changeScene("main", std::make_shared<Scene_Main>(this));
+	changeScene("menu", std::make_shared<Scene_Menu>(this));
 }
 
 void GameEngine::loadAssets(const std::string& configPath) {
@@ -36,6 +36,10 @@ void GameEngine::loadAssets(const std::string& configPath) {
 			m_assets.addTexture(name, path);
 			animation = Animation(name, m_assets.getTexture(name), std::stoi(aniFrameCount), std::stoi(aniSpeed));
 			m_assets.addAnimation(name, animation);
+		}
+		if (header == "FON") {
+			fin >> path >> name;
+			m_assets.addFont(name, path);
 		}
 	}
 }

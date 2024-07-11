@@ -7,3 +7,4 @@ ANI assets/textures/player_animation.png player_animation 4 10
 ANI assets/textures/player_animation_left.png player_animation_left 4 10
 ANI assets/textures/player_animation_up.png player_animation_up 4 10
 ANI assets/textures/player_animation_right.png player_animation_right 4 10
+FON assets/fonts/lunarlight.ttf lunarlight

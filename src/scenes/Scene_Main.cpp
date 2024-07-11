@@ -13,7 +13,6 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::A, "LEFT");
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::D, "RIGHT");
-	registerAction(sf::Keyboard::Escape, "PAUSE");
 	registerAction(sf::Keyboard::P, "DEBUG");
 
 	spawnEnemy(300.0f, 300.0f);
@@ -29,18 +28,11 @@ void Scene_Main::init() {
 }
 
 void Scene_Main::update() {
-	if (m_paused) {
-		return;
-	}
-
 	m_entities.update();
-	//sEnemySpawner();
 	sMovement();
 	sCollision();
 	sRender();
-
-	m_camera.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().getPos().x, m_player->getComponent<CTransform>().getPos().y));
-	m_game->getWindow().setView(m_camera);
+	cameraToPlayer();
 
 	m_currentFrame++;
 }
@@ -159,9 +151,7 @@ void Scene_Main::sCollision() {
 	Vec2 doorCollision = Physics::getOverlap(m_player, door);
 	if (doorCollision.x > 0 && doorCollision.y > 0) {
 		m_player->getComponent<CTransform>().setPosition(500.0f, 500.0f);
-
-		m_camera.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().getPos().x, m_player->getComponent<CTransform>().getPos().y));
-		m_game->getWindow().setView(m_camera);
+		cameraToPlayer();
 	}
 
 }
@@ -205,10 +195,6 @@ void Scene_Main::sMovement() {
 void Scene_Main::sDoAction(const Action& action) {
 
 	auto& playerInput = m_player->getComponent<CInput>();
-
-	if (action.getName() == "PAUSE") {
-		setPaused(!m_paused);
-	}
 
 	if (action.getName() == "UP") {
 		if (action.getType() == "START") {
@@ -259,7 +245,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	}
 
 	if (action.getName() == "DEBUG") {
-		if (action.getType() == "END") {
+		if (action.getType() == "START") {
 			m_game->setDebugMode(!m_game->isDebugMode());
 		}
 	}
@@ -291,6 +277,11 @@ void Scene_Main::changeAnimation(const std::shared_ptr<Entity>& entity, const st
 	if (entity->getComponent<CAnimation>().animation.getName() != animationName) {
 		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName), repeat);
 	}
+}
+
+void Scene_Main::cameraToPlayer() {
+	m_camera.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().getPos().x, m_player->getComponent<CTransform>().getPos().y));
+	m_game->getWindow().setView(m_camera);
 }
 
 void Scene_Main::spawnEnemy(float x, float y) {
