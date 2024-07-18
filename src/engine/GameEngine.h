@@ -26,6 +26,7 @@ public:
 								const std::string& sceneName, 
 								std::shared_ptr<Scene> scene, 
 								bool endCurrentScene = false);
+	std::shared_ptr<Scene>	getScene(const std::string sceneName);
 	Assets&					getAssets();
 	sf::RenderWindow&		getWindow();
 	void					run();

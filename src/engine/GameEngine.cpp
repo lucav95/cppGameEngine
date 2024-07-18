@@ -10,9 +10,9 @@ GameEngine::GameEngine(const std::string& configPath) {
 void GameEngine::init(const std::string& configPath) {
 	loadAssets(configPath);
 
-	m_window.create(sf::VideoMode(1280, 720), "Game");
+	m_window.create(sf::VideoMode(1280, 720), "Game", sf::Style::Close);
 	m_window.setFramerateLimit(60);
-
+	
 	changeScene("menu", std::make_shared<Scene_Menu>(this));
 }
 
@@ -53,12 +53,25 @@ void GameEngine::run() {
 }
 
 void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene, bool endCurrentScene) {
+	auto deleteScene = m_scenes.find(m_currentScene);
+	if (endCurrentScene && deleteScene != m_scenes.end()) {
+		m_scenes.erase(deleteScene);
+	}
+
 	m_currentScene = sceneName;
 	m_scenes[sceneName] = scene;
 }
 
 std::shared_ptr<Scene> GameEngine::getCurrentScene() {
 	return m_scenes[m_currentScene];
+}
+
+std::shared_ptr<Scene> GameEngine::getScene(const std::string sceneName) {
+	if (m_scenes.find(sceneName) == m_scenes.end()) {
+		std::cout << "Scene not found\n";
+		return NULL;
+	}
+	return m_scenes[sceneName];
 }
 
 void GameEngine::sUserInput() {

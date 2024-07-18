@@ -12,20 +12,20 @@ void Scene_Menu::init() {
 	m_start.y = 200;
 	m_start.w = 150;
 	m_start.h = 45;
-
-	registerAction(sf::Keyboard::Escape, "GAME_START");
 }
 
 void Scene_Menu::update() {
 	sRender();
 	sMouseInput();
+
+	m_currentFrame++;
 }
 
 void Scene_Menu::sRender() {
 	m_game->getWindow().clear();
 	
 	sf::Text heading;
-	heading.setFont(m_game->getAssets().getFont("lunarlight"));
+	heading.setFont(m_game->getAssets().getFont("pixelmix"));
 	heading.setString("Start");
 	heading.setCharacterSize(45);
 	heading.setFillColor(m_startHover ? sf::Color::Green : sf::Color::White);
@@ -39,7 +39,8 @@ void Scene_Menu::sMouseInput() {
 
 	sf::Vector2i mousePos = sf::Mouse::getPosition(m_game->getWindow());
 
-	m_startHover = mousePos.x >= m_start.x &&
+	m_startHover = 
+		mousePos.x >= m_start.x &&
 		mousePos.x <= m_start.x + m_start.w &&
 		mousePos.y >= m_start.y &&
 		mousePos.y <= m_start.y + m_start.h;
@@ -51,11 +52,8 @@ void Scene_Menu::sMouseInput() {
 }
 
 void Scene_Menu::sDoAction(const Action& action) {
-	if (action.getName() == "GAME_START" && action.getType() == "START") {
-		onEnd();
-	}
 }
 
 void Scene_Menu::onEnd() {
-	m_game->changeScene("main", std::make_shared<Scene_Main>(m_game));
+	m_game->changeScene("main", std::make_shared<Scene_Main>(m_game), true);
 }

@@ -12,6 +12,7 @@ class Scene_Menu : public Scene {
 	bool					m_startHover = false;
 	MenuPoint				m_start;
 	
+	void					onEnd() override;
 
 public:
 	Scene_Menu(GameEngine* game);
@@ -19,5 +20,4 @@ public:
 	void					update() override;
 	void					sRender() override;
 	void					sDoAction(const Action& action) override;
-	void					onEnd() override;
 };

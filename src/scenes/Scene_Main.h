@@ -28,11 +28,12 @@ class Scene_Main : public Scene {
 	void					spawnEnemy(float x, float y);
 	void					spawnDoor(float x, float y);
 
+	void					onEnd() override;
+
 public:
 	Scene_Main(GameEngine* game);
 
 	void					update() override;
 	void					sRender() override;
 	void					sDoAction(const Action& action) override;
-	void					onEnd() override;
 };

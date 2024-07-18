@@ -1,4 +1,5 @@
 #include "Scene_Main.h"
+#include "Scene_Pause.h"
 #include "../engine/GameEngine.h"
 #include "../engine/Physics.h"
 #include <iostream>
@@ -14,6 +15,7 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::D, "RIGHT");
 	registerAction(sf::Keyboard::P, "DEBUG");
+	registerAction(sf::Keyboard::Escape, "PAUSE");
 
 	spawnEnemy(300.0f, 300.0f);
 	spawnEnemy(300.0f, 464.0f);
@@ -244,9 +246,16 @@ void Scene_Main::sDoAction(const Action& action) {
 		}
 	}
 
-	if (action.getName() == "DEBUG") {
-		if (action.getType() == "START") {
-			m_game->setDebugMode(!m_game->isDebugMode());
+	if (action.getName() == "DEBUG" && action.getType() == "START") {
+		m_game->setDebugMode(!m_game->isDebugMode());
+	}
+
+	if (action.getName() == "PAUSE" && action.getType() == "START") {
+		if (m_game->getScene("pause") == NULL) {
+			m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
+		}
+		else {
+			m_game->changeScene("pause", m_game->getScene("pause"));
 		}
 	}
 }
