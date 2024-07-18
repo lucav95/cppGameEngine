@@ -13,6 +13,11 @@ void Scene_Pause::init() {
 	registerAction(sf::Keyboard::D, "RIGHT");
 	registerAction(sf::Keyboard::Escape, "CANCEL");
 
+	m_menuPoints.push_back("Point1");
+	m_menuPoints.push_back("Point2");
+	m_menuPoints.push_back("Save");
+	m_menuPoints.push_back("Quit");
+
 	m_camera = sf::View(
 		sf::Vector2f(m_game->getWindow().getSize().x / 2, m_game->getWindow().getSize().y / 2),
 		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
@@ -26,32 +31,49 @@ void Scene_Pause::update() {
 
 void Scene_Pause::sRender() {
 	m_game->getWindow().clear();
-	m_game->getWindow().setView(m_camera);
 
-	sf::RectangleShape background;
-	background.setFillColor(sf::Color::Red);
-	background.setSize(sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
-	background.setPosition(0, 0);
-	m_game->getWindow().draw(background);
+	float textY = 100;
+	sf::Text menuText;
+	menuText.setCharacterSize(30);
+	menuText.setFont(m_game->getAssets().getFont("pixelmix"));
+	menuText.setFillColor(sf::Color::White);
+	for (std::string menuPoint : m_menuPoints) {
+		menuText.setString(menuPoint);
+		menuText.setPosition(70, textY);
+		m_game->getWindow().draw(menuText);
+		textY += 40;
+	}
+
+	sf::RectangleShape cursor(sf::Vector2f(30, 30));
+	cursor.setFillColor(sf::Color::Red);
+	cursor.setPosition(20, m_cursorPosY);
+	m_game->getWindow().draw(cursor);
 
 	m_game->getWindow().display();
 }
 
 void Scene_Pause::sDoAction(const Action& action) {
+	float menuPointStep = 40;
+
 	if (action.getName() == "UP" && action.getType() == "START") {
-		
+		if (m_menuIndex > 0) {
+			m_cursorPosY -= menuPointStep;
+			m_menuIndex--;
+		}
 	}
 	if (action.getName() == "LEFT" && action.getType() == "START") {
 
 	}
 	if (action.getName() == "DOWN" && action.getType() == "START") {
-
+		if (m_menuIndex < m_menuPoints.size() - 1) {
+			m_cursorPosY += menuPointStep;
+			m_menuIndex++;
+		}
 	}
 	if (action.getName() == "RIGHT" && action.getType() == "START") {
 
 	}
 	if (action.getName() == "CANCEL" && action.getType() == "START") {
-		std::cout << "cancel\n";
 		onEnd();
 	}
 }

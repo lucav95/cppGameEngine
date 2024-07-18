@@ -16,8 +16,7 @@ void Scene_Menu::init() {
 
 void Scene_Menu::update() {
 	sRender();
-	sMouseInput();
-
+	checkHover();
 	m_currentFrame++;
 }
 
@@ -35,23 +34,20 @@ void Scene_Menu::sRender() {
 	m_game->getWindow().display();
 }
 
-void Scene_Menu::sMouseInput() {
-
+void Scene_Menu::checkHover() {
 	sf::Vector2i mousePos = sf::Mouse::getPosition(m_game->getWindow());
-
-	m_startHover = 
+	m_startHover =
 		mousePos.x >= m_start.x &&
 		mousePos.x <= m_start.x + m_start.w &&
 		mousePos.y >= m_start.y &&
 		mousePos.y <= m_start.y + m_start.h;
-	
-	if (m_startHover && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		onEnd();
-	}
-
 }
 
 void Scene_Menu::sDoAction(const Action& action) {
+
+	if (action.getName() == "MOUSE_LEFT" && action.getType() == "START" && m_startHover) {
+		onEnd();
+	}
 }
 
 void Scene_Menu::onEnd() {

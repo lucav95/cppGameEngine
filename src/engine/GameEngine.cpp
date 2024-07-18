@@ -85,6 +85,27 @@ void GameEngine::sUserInput() {
 			const std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
 			getCurrentScene()->doAction(Action(getCurrentScene()->getActionMap().at(event.key.code), actionType));
 		}
+
+		sf::Vector2i mousePos = sf::Mouse::getPosition(getWindow());
+
+		if (event.type == sf::Event::MouseButtonPressed) {
+			switch (event.mouseButton.button) {
+				case sf::Mouse::Left: { getCurrentScene()->doAction(Action("MOUSE_LEFT", "START", mousePos)); break; }
+				case sf::Mouse::Middle: { getCurrentScene()->doAction(Action("MOUSE_MIDDLE", "START", mousePos)); break; }
+				case sf::Mouse::Right: { getCurrentScene()->doAction(Action("MOUSE_RIGHT", "START", mousePos)); break; }
+				default: break;
+			}
+		}
+
+		if (event.type == sf::Event::MouseButtonReleased) {
+			switch (event.mouseButton.button) {
+				case sf::Mouse::Left: { getCurrentScene()->doAction(Action("MOUSE_LEFT", "END", mousePos)); break; }
+				case sf::Mouse::Middle: { getCurrentScene()->doAction(Action("MOUSE_MIDDLE", "END", mousePos)); break; }
+				case sf::Mouse::Right: { getCurrentScene()->doAction(Action("MOUSE_RIGHT", "END", mousePos)); break; }
+				default: break;
+			}
+		}
+
 	}
 }
 

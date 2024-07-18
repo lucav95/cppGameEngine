@@ -251,12 +251,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	}
 
 	if (action.getName() == "PAUSE" && action.getType() == "START") {
-		if (m_game->getScene("pause") == NULL) {
-			m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
-		}
-		else {
-			m_game->changeScene("pause", m_game->getScene("pause"));
-		}
+		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
 	}
 }
 

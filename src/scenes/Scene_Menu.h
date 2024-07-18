@@ -7,7 +7,7 @@ struct MenuPoint { float x; float y; float w; float h; };
 class Scene_Menu : public Scene {
 
 	void					init();
-	void					sMouseInput();
+	void					checkHover();
 
 	bool					m_startHover = false;
 	MenuPoint				m_start;
