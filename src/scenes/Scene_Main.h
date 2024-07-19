@@ -7,6 +7,7 @@ class Scene_Main : public Scene {
 	Vec2					m_playerBox = Vec2(0.0f, 0.0f);
 	Vec2					m_enemyBox = Vec2(0.0f, 0.0f);
 	std::string				m_playerStandingTexture = "player";
+	std::string				m_boxText = "";
 
 	sf::View				m_camera;
 
@@ -17,7 +18,10 @@ class Scene_Main : public Scene {
 
 	void					checkAnimationDirections(bool up, bool down, bool left, bool right);
 	void					changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName, bool repeat);
+
 	void					renderBoundingBox(const std::shared_ptr<Entity>& entity);
+	void					renderDialogBox();
+
 	void					cameraToPlayer();
 	
 	//systems
@@ -25,8 +29,10 @@ class Scene_Main : public Scene {
 	void					sCollision();
 
 	void					spawnPlayer();
-	void					spawnEnemy(float x, float y);
-	void					spawnDoor(float x, float y);
+	void					spawnEntity(
+								const Vec2& pos, 
+								const Vec2& boundingBox,
+								const std::string name);
 
 	void					onEnd() override;
 

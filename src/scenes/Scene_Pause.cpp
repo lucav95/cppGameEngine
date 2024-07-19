@@ -1,6 +1,7 @@
 #include "Scene_Pause.h"
 #include "../engine/GameEngine.h"
 #include <iostream>
+#include "../engine/Physics.h"
 
 Scene_Pause::Scene_Pause(GameEngine* game) : Scene(game) {
 	init();
@@ -18,10 +19,11 @@ void Scene_Pause::init() {
 	m_menuPoints.push_back("Save");
 	m_menuPoints.push_back("Quit");
 
-	m_camera = sf::View(
-		sf::Vector2f(m_game->getWindow().getSize().x / 2, m_game->getWindow().getSize().y / 2),
-		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
-	m_game->getWindow().setView(m_camera);
+	auto windowSize = m_game->getWindow().getSize();
+	m_windowPos = Physics::getViewPosition(
+		m_game->getWindow().getView(),
+		Vec2(windowSize.x, windowSize.y));
+	std::cout << m_windowPos.x;
 }
 
 void Scene_Pause::update() {
@@ -39,14 +41,14 @@ void Scene_Pause::sRender() {
 	menuText.setFillColor(sf::Color::White);
 	for (std::string menuPoint : m_menuPoints) {
 		menuText.setString(menuPoint);
-		menuText.setPosition(70, textY);
+		menuText.setPosition(m_windowPos.x + 70, m_windowPos.y + textY);
 		m_game->getWindow().draw(menuText);
 		textY += 40;
 	}
 
 	sf::RectangleShape cursor(sf::Vector2f(30, 30));
 	cursor.setFillColor(sf::Color::Red);
-	cursor.setPosition(20, m_cursorPosY);
+	cursor.setPosition(m_windowPos.x + 20, m_windowPos.y + m_cursorPosY);
 	m_game->getWindow().draw(cursor);
 
 	m_game->getWindow().display();
@@ -79,6 +81,5 @@ void Scene_Pause::sDoAction(const Action& action) {
 }
 
 void Scene_Pause::onEnd() {
-	// camera to player
 	m_game->changeScene("main", m_game->getScene("main"));
 }

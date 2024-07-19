@@ -4,10 +4,10 @@
 
 class Scene_Pause : public Scene {
 
-	sf::View					m_camera;
 	std::vector<std::string>	m_menuPoints;
 	float						m_cursorPosY = 100;
 	int							m_menuIndex = 0;
+	Vec2						m_windowPos;
 
 	void						onEnd() override;
 	void						init();

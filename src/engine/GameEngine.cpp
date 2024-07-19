@@ -2,13 +2,15 @@
 #include "../scenes/Scene_Menu.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
-GameEngine::GameEngine(const std::string& configPath) {
-	init(configPath);
+GameEngine::GameEngine(const std::string& configPath, const std::string& dialogPath) {
+	init(configPath, dialogPath);
 }
 
-void GameEngine::init(const std::string& configPath) {
+void GameEngine::init(const std::string& configPath, const std::string& dialogPath) {
 	loadAssets(configPath);
+	loadDialog(dialogPath);
 
 	m_window.create(sf::VideoMode(1280, 720), "Game", sf::Style::Close);
 	m_window.setFramerateLimit(60);
@@ -42,6 +44,24 @@ void GameEngine::loadAssets(const std::string& configPath) {
 			m_assets.addFont(name, path);
 		}
 	}
+	fin.close();
+}
+
+void GameEngine::loadDialog(const std::string& dialogPath) {
+	std::ifstream fin(dialogPath);
+
+	std::string line;
+	while (std::getline(fin, line)) {
+
+		std::stringstream stream(line);
+		std::vector<std::string> row;
+		std::string cell;
+		while (std::getline(stream, cell, ';')) {
+			row.push_back(cell);
+		}
+		m_dialogMap[row.at(0)] = row.at(1);
+	}
+	fin.close();
 }
 
 void GameEngine::run() {
@@ -106,7 +126,15 @@ void GameEngine::sUserInput() {
 			}
 		}
 
+		if (event.type == sf::Event::MouseMoved) {
+			getCurrentScene()->doAction(Action("MOUSE_MOVE", "START", mousePos));
+		}
+
 	}
+}
+
+std::string& GameEngine::getDialog(const std::string& key) {
+	return m_dialogMap[key];
 }
 
 void GameEngine::quit() { 

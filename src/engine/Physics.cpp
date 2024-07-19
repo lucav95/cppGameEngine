@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include <iostream>
 
 const Vec2& Physics::getOverlap(std::shared_ptr<Entity> a, std::shared_ptr<Entity> b) {
 	Vec2& aPos = a->getComponent<CTransform>().getPos();
@@ -26,4 +27,11 @@ const Vec2& Physics::getPreviousOverlap(std::shared_ptr<Entity> a, std::shared_p
 	return Vec2(
 		aBoundingBox.halfSize.x + bBoundingBox.halfSize.x - delta.x,
 		aBoundingBox.halfSize.y + bBoundingBox.halfSize.y - delta.y);
+}
+
+const Vec2& Physics::getViewPosition(const sf::View& view, const Vec2& windowSize) {
+	float wx = view.getCenter().x - (windowSize.x / 2);
+	float wy = view.getCenter().y - (windowSize.y / 2);
+
+	return Vec2(wx, wy);
 }

@@ -15,11 +15,15 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::D, "RIGHT");
 	registerAction(sf::Keyboard::P, "DEBUG");
+	registerAction(sf::Keyboard::Enter, "ACCEPT");
 	registerAction(sf::Keyboard::Escape, "PAUSE");
 
-	spawnEnemy(300.0f, 300.0f);
-	spawnEnemy(300.0f, 464.0f);
-	spawnDoor(500.0f, 100.0f);
+	spawnEntity(Vec2(300, 300), Vec2(100, 100), "enemy");
+	spawnEntity(Vec2(300, 464), Vec2(100, 100), "enemy");
+	spawnEntity(Vec2(500, 100), Vec2(90, 130), "door");
+	spawnEntity(Vec2(620, 150), Vec2(60, 60), "sign1");
+	spawnEntity(Vec2(770, 150), Vec2(60, 60), "sign2");
+	
 	spawnPlayer();
 	m_camera = sf::View(
 		sf::Vector2f(m_game->getWindow().getSize().x / 2, m_game->getWindow().getSize().y / 2), 
@@ -87,9 +91,21 @@ void Scene_Main::sRender() {
 			m_game->getWindow().draw(door);
 		}
 
+		if (e->getTag() == "sign1" || e->getTag() == "sign2") {
+			sf::RectangleShape sign(sf::Vector2f(60, 60));
+			sign.setPosition(
+				e->getComponent<CTransform>().getPos().x - (sign.getSize().x / 2),
+				e->getComponent<CTransform>().getPos().y - (sign.getSize().y / 2));
+			sign.setTexture(&m_game->getAssets().getTexture("sign"));
+			m_game->getWindow().draw(sign);
+		}
 
 		if (m_game->isDebugMode()) {
 			renderBoundingBox(e);
+		}
+
+		if (m_boxText != "") {
+			renderDialogBox();
 		}
 	}
 	m_game->getWindow().display();
@@ -101,7 +117,6 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 
 	sf::RectangleShape boundingBox;
 		boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
-		boundingBox.setOutlineColor(sf::Color(0, 0, 255));
 		boundingBox.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
 		boundingBox.setPosition(
 			entityTransform.getPos().x - (boundingBox.getSize().x / 2) + entityBoundingBox.relativePosition.x,
@@ -115,36 +130,62 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 	m_game->getWindow().draw(point);
 }
 
+void Scene_Main::renderDialogBox() {
+
+	auto windowSize = m_game->getWindow().getSize();
+	Vec2 viewPosition = Physics::getViewPosition(
+		m_game->getWindow().getView(),
+		Vec2(windowSize.x, windowSize.y));
+
+	sf::RectangleShape box(sf::Vector2f(1000, 200));
+	box.setFillColor(sf::Color::Black);
+	box.setOutlineColor(sf::Color::White);
+	box.setOutlineThickness(10);
+	box.setPosition(viewPosition.x + 140, viewPosition.y + 500);
+	m_game->getWindow().draw(box);
+
+	sf::Text renderText;
+	renderText.setFillColor(sf::Color::White);
+	renderText.setCharacterSize(30);
+	renderText.setFont(m_game->getAssets().getFont("pixelmix"));
+	renderText.setString(m_boxText);
+	renderText.setPosition(viewPosition.x + 160, viewPosition.y + 520);
+	m_game->getWindow().draw(renderText);
+}
+
 
 void Scene_Main::sCollision() {
 
 	auto& playerTransform = m_player->getComponent<CTransform>();
 
-	for (auto enemy : m_entities.getEntities("enemy")) {
+	for (auto e : m_entities.getEntities()) {
 
-		auto& enemyTransform = enemy->getComponent<CTransform>();
+		if (e->getTag() == "enemy" || e->getTag() == "sign1" || e->getTag() == "sign2") {
 
-		Vec2 overlap = Physics::getOverlap(m_player, enemy);
-		Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, enemy);
+			auto& enemyTransform = e->getComponent<CTransform>();
 
-		if (overlap.x >= 0 && overlap.y >= 0) {
-			bool vertically = lastOverlap.x > 0;
-			bool horizontally = lastOverlap.y > 0;
-			// came right
-			if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
-				playerTransform.setX(playerTransform.getPos().x + overlap.x);
-			}
-			// came left
-			else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
-				playerTransform.setX(playerTransform.getPos().x - overlap.x);
-			}
-			// came top
-			else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
-				playerTransform.setY(playerTransform.getPos().y - overlap.y);
-			}
-			//came bottom
-			else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
-				playerTransform.setY(playerTransform.getPos().y + overlap.y);
+			Vec2 overlap = Physics::getOverlap(m_player, e);
+			Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, e);
+
+			if (overlap.x >= 0 && overlap.y >= 0) {
+				bool vertically = lastOverlap.x > 0;
+				bool horizontally = lastOverlap.y > 0;
+				// came right
+				if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
+					playerTransform.setX(playerTransform.getPos().x + overlap.x);
+				}
+				// came left
+				else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
+					playerTransform.setX(playerTransform.getPos().x - overlap.x);
+				}
+				// came top
+				else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
+					playerTransform.setY(playerTransform.getPos().y - overlap.y);
+				}
+				//came bottom
+				else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
+					playerTransform.setY(playerTransform.getPos().y + overlap.y);
+				}
 			}
 		}
 	}
@@ -246,6 +287,19 @@ void Scene_Main::sDoAction(const Action& action) {
 		}
 	}
 
+	if (action.getName() == "ACCEPT" && action.getType() == "START") {
+		
+		for (auto e : m_entities.getEntities()) {
+			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
+			if (e->getTag() == "sign1" && dist <= 40) {
+				m_boxText = m_boxText == "" ? m_game->getDialog("sign1") : "";
+			}
+			if (e->getTag() == "sign2" && dist <= 40) {
+				m_boxText = m_boxText == "" ? m_game->getDialog("sign2") : "";
+			}
+		}
+	}
+
 	if (action.getName() == "DEBUG" && action.getType() == "START") {
 		m_game->setDebugMode(!m_game->isDebugMode());
 	}
@@ -288,13 +342,6 @@ void Scene_Main::cameraToPlayer() {
 	m_game->getWindow().setView(m_camera);
 }
 
-void Scene_Main::spawnEnemy(float x, float y) {
-	auto enemy = m_entities.addEntity("enemy");
-
-	enemy->addComponent<CTransform>(Vec2(x, y), Vec2(0.0f, 0.0f), 0.0f);
-	enemy->addComponent<CBoundingBox>(Vec2(100.0f, 100.0f));
-}
-
 void Scene_Main::spawnPlayer() {
 	auto entity = m_entities.addEntity("player");
 
@@ -308,10 +355,10 @@ void Scene_Main::spawnPlayer() {
 	m_player = entity;
 }
 
-void Scene_Main::spawnDoor(float x, float y) {
-	auto door = m_entities.addEntity("door");
-	door->addComponent<CTransform>(Vec2(x, y), Vec2(0, 0), 0);
-	door->addComponent<CBoundingBox>(Vec2(90.0f, 130.0f));
+void Scene_Main::spawnEntity(const Vec2& pos, const Vec2& boundingBox, const std::string name) {
+	auto e = m_entities.addEntity(name);
+	e->addComponent<CTransform>(pos, Vec2(0, 0), 0);
+	e->addComponent<CBoundingBox>(boundingBox);
 }
 
 void Scene_Main::onEnd() {

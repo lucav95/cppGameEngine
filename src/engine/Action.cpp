@@ -16,6 +16,6 @@ const std::string& Action::getType() const {
 	return m_type;
 }
 
-std::string Action::toString() const {
-	return m_name + ", " + m_type;
+const sf::Vector2i& Action::getMousePos() const {
+	return m_mousePos;
 }
