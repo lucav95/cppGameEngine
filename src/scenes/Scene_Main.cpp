@@ -18,8 +18,8 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::Enter, "ACCEPT");
 	registerAction(sf::Keyboard::Escape, "PAUSE");
 
+	spawnEntity(Vec2(200, 300), Vec2(100, 100), "enemy");
 	spawnEntity(Vec2(300, 300), Vec2(100, 100), "enemy");
-	spawnEntity(Vec2(300, 464), Vec2(100, 100), "enemy");
 	spawnEntity(Vec2(500, 100), Vec2(90, 130), "door");
 	spawnEntity(Vec2(620, 150), Vec2(60, 60), "sign1");
 	spawnEntity(Vec2(770, 150), Vec2(60, 60), "sign2");
@@ -167,7 +167,8 @@ void Scene_Main::sCollision() {
 			Vec2 overlap = Physics::getOverlap(m_player, e);
 			Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, e);
 
-			if (overlap.x >= 0 && overlap.y >= 0) {
+			if (overlap.x > 0 && overlap.y > 0) {
+
 				bool vertically = lastOverlap.x > 0;
 				bool horizontally = lastOverlap.y > 0;
 				// came right
@@ -239,6 +240,23 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	auto& playerInput = m_player->getComponent<CInput>();
 
+	if (action.getName() == "ACCEPT" && action.getType() == "START") {
+
+		for (auto e : m_entities.getEntities()) {
+			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
+			if (e->getTag() == "sign1" && dist <= 40) {
+				m_boxText = m_boxText == "" ? m_game->getDialog("sign1") : "";
+			}
+			if (e->getTag() == "sign2" && dist <= 40) {
+				m_boxText = m_boxText == "" ? m_game->getDialog("sign2") : "";
+			}
+		}
+	}
+
+	if (action.getName() == "DEBUG" && action.getType() == "START") {
+		m_game->setDebugMode(!m_game->isDebugMode());
+	}
+
 	if (action.getName() == "UP") {
 		if (action.getType() == "START") {
 			playerInput.up = true;
@@ -285,23 +303,6 @@ void Scene_Main::sDoAction(const Action& action) {
 			m_playerStandingTexture = "player_right";
 			playerInput.right = false;
 		}
-	}
-
-	if (action.getName() == "ACCEPT" && action.getType() == "START") {
-		
-		for (auto e : m_entities.getEntities()) {
-			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
-			if (e->getTag() == "sign1" && dist <= 40) {
-				m_boxText = m_boxText == "" ? m_game->getDialog("sign1") : "";
-			}
-			if (e->getTag() == "sign2" && dist <= 40) {
-				m_boxText = m_boxText == "" ? m_game->getDialog("sign2") : "";
-			}
-		}
-	}
-
-	if (action.getName() == "DEBUG" && action.getType() == "START") {
-		m_game->setDebugMode(!m_game->isDebugMode());
 	}
 
 	if (action.getName() == "PAUSE" && action.getType() == "START") {
