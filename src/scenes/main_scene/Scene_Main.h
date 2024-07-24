@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Scene.h"
+#include "../Scene.h"
+#include "TextBoxSystem.h"
 
 class Scene_Main : public Scene {
 
@@ -8,6 +9,8 @@ class Scene_Main : public Scene {
 	Vec2					m_enemyBox = Vec2(0.0f, 0.0f);
 	std::string				m_playerStandingTexture = "player";
 	std::string				m_boxText = "";
+	bool					m_dialogArrowShowing = false;
+	TextBoxSystem			m_textBoxSys = nullptr;
 
 	sf::View				m_camera;
 
@@ -20,7 +23,6 @@ class Scene_Main : public Scene {
 	void					changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName, bool repeat);
 
 	void					renderBoundingBox(const std::shared_ptr<Entity>& entity);
-	void					renderDialogBox();
 
 	void					cameraToPlayer();
 	

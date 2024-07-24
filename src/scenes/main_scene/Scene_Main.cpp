@@ -1,8 +1,9 @@
 #include "Scene_Main.h"
-#include "Scene_Pause.h"
-#include "../engine/GameEngine.h"
-#include "../engine/Physics.h"
+#include "../Scene_Pause.h"
+#include "../../engine/GameEngine.h"
+#include "../../engine/Physics.h"
 #include <iostream>
+#include <sstream>
 
 Scene_Main::Scene_Main(GameEngine* game)
 	: Scene(game) {
@@ -10,6 +11,8 @@ Scene_Main::Scene_Main(GameEngine* game)
 }
 
 void Scene_Main::init() {
+	m_textBoxSys = TextBoxSystem(m_game);
+
 	registerAction(sf::Keyboard::W, "UP");
 	registerAction(sf::Keyboard::A, "LEFT");
 	registerAction(sf::Keyboard::S, "DOWN");
@@ -18,7 +21,7 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::Enter, "ACCEPT");
 	registerAction(sf::Keyboard::Escape, "PAUSE");
 
-	spawnEntity(Vec2(200, 300), Vec2(100, 100), "enemy");
+	spawnEntity(Vec2(120, 300), Vec2(100, 100), "enemy");
 	spawnEntity(Vec2(300, 300), Vec2(100, 100), "enemy");
 	spawnEntity(Vec2(500, 100), Vec2(90, 130), "door");
 	spawnEntity(Vec2(620, 150), Vec2(60, 60), "sign1");
@@ -99,19 +102,17 @@ void Scene_Main::sRender() {
 			sign.setTexture(&m_game->getAssets().getTexture("sign"));
 			m_game->getWindow().draw(sign);
 		}
-
-		if (m_game->isDebugMode()) {
-			renderBoundingBox(e);
-		}
-
-		if (m_boxText != "") {
-			renderDialogBox();
-		}
+		renderBoundingBox(e);
+	}
+	if (!m_textBoxSys.getText().empty()) {
+		m_textBoxSys.render(m_currentFrame);
 	}
 	m_game->getWindow().display();
 }
 
 void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
+	if (!m_game->isDebugMode()) return;
+
 	auto& entityBoundingBox = entity->getComponent<CBoundingBox>();
 	auto& entityTransform = entity->getComponent<CTransform>();
 
@@ -129,30 +130,6 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 	point.setSize(sf::Vector2f(3, 3));
 	m_game->getWindow().draw(point);
 }
-
-void Scene_Main::renderDialogBox() {
-
-	auto windowSize = m_game->getWindow().getSize();
-	Vec2 viewPosition = Physics::getViewPosition(
-		m_game->getWindow().getView(),
-		Vec2(windowSize.x, windowSize.y));
-
-	sf::RectangleShape box(sf::Vector2f(1000, 200));
-	box.setFillColor(sf::Color::Black);
-	box.setOutlineColor(sf::Color::White);
-	box.setOutlineThickness(10);
-	box.setPosition(viewPosition.x + 140, viewPosition.y + 500);
-	m_game->getWindow().draw(box);
-
-	sf::Text renderText;
-	renderText.setFillColor(sf::Color::White);
-	renderText.setCharacterSize(30);
-	renderText.setFont(m_game->getAssets().getFont("pixelmix"));
-	renderText.setString(m_boxText);
-	renderText.setPosition(viewPosition.x + 160, viewPosition.y + 520);
-	m_game->getWindow().draw(renderText);
-}
-
 
 void Scene_Main::sCollision() {
 
@@ -245,10 +222,10 @@ void Scene_Main::sDoAction(const Action& action) {
 		for (auto e : m_entities.getEntities()) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
 			if (e->getTag() == "sign1" && dist <= 40) {
-				m_boxText = m_boxText == "" ? m_game->getDialog("sign1") : "";
+				m_textBoxSys.setText(m_textBoxSys.getText().empty() ? m_game->getDialog("sign1") : "");
 			}
 			if (e->getTag() == "sign2" && dist <= 40) {
-				m_boxText = m_boxText == "" ? m_game->getDialog("sign2") : "";
+				m_textBoxSys.setText(m_textBoxSys.getText().empty() ? m_game->getDialog("sign2") : "");
 			}
 		}
 	}
