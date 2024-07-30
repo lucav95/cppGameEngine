@@ -11,6 +11,7 @@ class Scene_Main : public Scene {
 	std::string				m_boxText = "";
 	bool					m_dialogArrowShowing = false;
 	TextBoxSystem			m_textBoxSys = nullptr;
+	int						m_currentTextBox = 0;
 
 	sf::View				m_camera;
 

@@ -105,7 +105,7 @@ void Scene_Main::sRender() {
 		renderBoundingBox(e);
 	}
 	if (!m_textBoxSys.getText().empty()) {
-		m_textBoxSys.render(m_currentFrame);
+		m_textBoxSys.render(m_currentFrame, m_currentTextBox);
 	}
 	m_game->getWindow().display();
 }
@@ -221,11 +221,19 @@ void Scene_Main::sDoAction(const Action& action) {
 
 		for (auto e : m_entities.getEntities()) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
-			if (e->getTag() == "sign1" && dist <= 40) {
-				m_textBoxSys.setText(m_textBoxSys.getText().empty() ? m_game->getDialog("sign1") : "");
-			}
-			if (e->getTag() == "sign2" && dist <= 40) {
-				m_textBoxSys.setText(m_textBoxSys.getText().empty() ? m_game->getDialog("sign2") : "");
+			if ((e->getTag() == "sign1" || e->getTag() == "sign2") && dist <= 40) {
+
+				if (m_textBoxSys.getText().empty()) {
+					m_textBoxSys.setText(m_game->getDialog(e->getTag()));
+					m_currentTextBox = 0;
+				}
+				else if (m_currentTextBox < m_textBoxSys.getBoxCount() - 1) {
+					m_currentTextBox++;
+				}
+				else {
+					m_currentTextBox = 0;
+					m_textBoxSys.setText("");
+				}
 			}
 		}
 	}
