@@ -10,6 +10,7 @@ class Scene_Main : public Scene {
 	std::string				m_playerStandingTexture = "player";
 	std::string				m_boxText = "";
 	bool					m_dialogArrowShowing = false;
+	bool					m_freezePlayer = false;
 	TextBoxSystem			m_textBoxSys = nullptr;
 	int						m_currentTextBox = 0;
 
@@ -22,6 +23,7 @@ class Scene_Main : public Scene {
 
 	void					checkAnimationDirections(bool up, bool down, bool left, bool right);
 	void					changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName, bool repeat);
+	void					handlePlayerMovement(const Action& action, CInput& playerInput);
 
 	void					renderBoundingBox(const std::shared_ptr<Entity>& entity);
 

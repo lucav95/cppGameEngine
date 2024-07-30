@@ -56,8 +56,6 @@ void Scene_Main::sRender() {
 	m_game->getWindow().draw(background);
 
 	for (auto e : m_entities.getEntities()) {
-
-		auto& entityTransform = e->getComponent<CTransform>();
 		
 		if (e->getTag() == "player") {
 		
@@ -77,6 +75,8 @@ void Scene_Main::sRender() {
 			else {
 				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
 			}
+
+			auto& entityTransform = e->getComponent<CTransform>();
 			playerRect.setPosition(
 				entityTransform.getPos().x - (playerRect.getSize().x / 2),
 				entityTransform.getPos().y - (playerRect.getSize().y / 2));
@@ -185,6 +185,10 @@ void Scene_Main::sMovement() {
 	int x = 0;
 	int y = 0;
 
+	if (m_freezePlayer) {
+		return;
+	}
+
 	if (m_player->getComponent<CInput>().up) {
 		y = -5;
 		playerTransform.velocity.y = y;
@@ -215,13 +219,15 @@ void Scene_Main::sMovement() {
 
 void Scene_Main::sDoAction(const Action& action) {
 
-	auto& playerInput = m_player->getComponent<CInput>();
-
 	if (action.getName() == "ACCEPT" && action.getType() == "START") {
 
 		for (auto e : m_entities.getEntities()) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
 			if ((e->getTag() == "sign1" || e->getTag() == "sign2") && dist <= 40) {
+
+				if (!m_freezePlayer) {
+					m_freezePlayer = true;
+				}
 
 				if (m_textBoxSys.getText().empty()) {
 					m_textBoxSys.setText(m_game->getDialog(e->getTag()));
@@ -233,6 +239,7 @@ void Scene_Main::sDoAction(const Action& action) {
 				else {
 					m_currentTextBox = 0;
 					m_textBoxSys.setText("");
+					m_freezePlayer = false;
 				}
 			}
 		}
@@ -242,6 +249,36 @@ void Scene_Main::sDoAction(const Action& action) {
 		m_game->setDebugMode(!m_game->isDebugMode());
 	}
 
+	auto& playerInput = m_player->getComponent<CInput>();
+
+	if (m_freezePlayer) {
+		if (playerInput.up) {
+			playerInput.up = false;
+			m_playerStandingTexture = "player_up";
+		}
+		else if (playerInput.down) {
+			playerInput.down = false;
+			m_playerStandingTexture = "player";
+		}
+		else if (playerInput.left) {
+			playerInput.left = false;
+			m_playerStandingTexture = "player_left";
+		}
+		else if (playerInput.right) {
+			playerInput.right = false;
+			m_playerStandingTexture = "player_right";
+		}
+		return;
+	}
+
+	handlePlayerMovement(action, playerInput);
+
+	if (action.getName() == "PAUSE" && action.getType() == "START") {
+		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
+	}
+}
+
+void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput) {
 	if (action.getName() == "UP") {
 		if (action.getType() == "START") {
 			playerInput.up = true;
@@ -288,10 +325,6 @@ void Scene_Main::sDoAction(const Action& action) {
 			m_playerStandingTexture = "player_right";
 			playerInput.right = false;
 		}
-	}
-
-	if (action.getName() == "PAUSE" && action.getType() == "START") {
-		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
 	}
 }
 

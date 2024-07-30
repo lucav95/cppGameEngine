@@ -23,7 +23,6 @@ void Scene_Pause::init() {
 	m_windowPos = Physics::getViewPosition(
 		m_game->getWindow().getView(),
 		Vec2(windowSize.x, windowSize.y));
-	std::cout << m_windowPos.x;
 }
 
 void Scene_Pause::update() {
