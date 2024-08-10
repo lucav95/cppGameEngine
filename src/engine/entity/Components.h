@@ -86,3 +86,19 @@ public:
 	CState() {}
 	CState(const std::string& state) : state(state) {}
 };
+
+class CStats : public Component {
+public:
+	float maxHp;
+	float hp;
+
+	void damage(int damage) {
+		hp = damage > hp ? 0 : hp - damage;
+	}
+
+	CStats() {
+		maxHp = 100;
+		hp = 100;
+	}
+	CStats(float maxHp, float health) : maxHp(maxHp), hp(health) {}
+};

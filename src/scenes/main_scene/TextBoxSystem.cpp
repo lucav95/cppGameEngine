@@ -5,7 +5,7 @@
 
 TextBoxSystem::TextBoxSystem(GameEngine* game) : m_game(game) { }
 
-void TextBoxSystem::render(int currentFrame, int currentBox) {
+void TextBoxSystem::render(int currentFrame) {
 	const auto WINDOW_SIZE = m_game->getWindow().getSize();
 
 	const Vec2 VIEW_POSITION = Physics::getViewPosition(
@@ -24,14 +24,14 @@ void TextBoxSystem::render(int currentFrame, int currentBox) {
 	renderText.setFillColor(sf::Color::White);
 	renderText.setCharacterSize(30);
 	renderText.setFont(m_game->getAssets().getFont("pixelmix"));
-	renderText.setString(m_boxes.at(currentBox));
+	renderText.setString(m_boxes.at(m_currentBox));
 	renderText.setLineSpacing(1.4);
 	renderText.setPosition(VIEW_POSITION.x + 160, VIEW_POSITION.y + 520);
 	m_game->getWindow().draw(renderText);
 
 	m_dialogArrowShowing = currentFrame % 30 == 0 ? !m_dialogArrowShowing : m_dialogArrowShowing;
 	
-	if (m_dialogArrowShowing && currentBox < m_boxes.size() - 1) {
+	if (m_dialogArrowShowing && m_currentBox < m_boxes.size() - 1) {
 		sf::RectangleShape dialogArrow(sf::Vector2f(30, 30));
 		dialogArrow.setTexture(&m_game->getAssets().getTexture("text_arrow"));
 		dialogArrow.setPosition(VIEW_POSITION.x + 1100, VIEW_POSITION.y + 660);
@@ -50,12 +50,12 @@ void TextBoxSystem::setBoxes() {
 	std::string token;
 	std::string formatted = "";
 	int lineCounter = 1;
-
-	const Vec2 BOX_SIZE(1000, 200);
+	
+	int BOX_WIDTH = 1000;
 
 	while (std::getline(ss, token, ' ')) {
 		boxText.setString(boxText.getString() + (" " + token));
-		if (boxText.getLocalBounds().width >= BOX_SIZE.x) {
+		if (boxText.getLocalBounds().width >= BOX_WIDTH) {
 			lineCounter++;
 			boxText.setString(token);
 			if (lineCounter > 4) {
@@ -84,4 +84,12 @@ void TextBoxSystem::setText(const std::string& text) {
 
 const std::string& TextBoxSystem::getText() const {
 	return m_text;
+}
+
+void TextBoxSystem::setCurrentBox(int currentBox) {
+	m_currentBox = currentBox;
+}
+
+int TextBoxSystem::getCurrentBox() {
+	return m_currentBox;
 }

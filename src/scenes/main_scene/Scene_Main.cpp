@@ -1,5 +1,6 @@
 #include "Scene_Main.h"
 #include "../Scene_Pause.h"
+#include "../Scene_Fight.h"
 #include "../../engine/GameEngine.h"
 #include "../../engine/Physics.h"
 #include <iostream>
@@ -20,6 +21,7 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::P, "DEBUG");
 	registerAction(sf::Keyboard::Enter, "ACCEPT");
 	registerAction(sf::Keyboard::Escape, "PAUSE");
+	registerAction(sf::Keyboard::O, "FIGHT");
 
 	spawnEntity(Vec2(120, 300), Vec2(100, 100), "enemy");
 	spawnEntity(Vec2(300, 300), Vec2(100, 100), "enemy");
@@ -43,7 +45,19 @@ void Scene_Main::update() {
 	sRender();
 	cameraToPlayer();
 
+	if (m_fight) {
+		fight();
+	}
+
 	m_currentFrame++;
+}
+
+void Scene_Main::fight() {
+	m_transitionOpacity = 0;
+	m_sceneChanged = false;
+	m_freezePlayer = false;
+	m_fight = false;
+	m_game->changeScene("fight", std::make_shared<Scene_Fight>(m_game, m_player));
 }
 
 void Scene_Main::sRender() {
@@ -105,8 +119,15 @@ void Scene_Main::sRender() {
 		renderBoundingBox(e);
 	}
 	if (!m_textBoxSys.getText().empty()) {
-		m_textBoxSys.render(m_currentFrame, m_currentTextBox);
+		m_textBoxSys.render(m_currentFrame);
 	}
+	if (m_sceneChanged) {
+		auto windowSize = m_game->getWindow().getSize();
+		renderTransition(Physics::getViewPosition(
+			m_game->getWindow().getView(), 
+			Vec2(windowSize.x, windowSize.y)));
+	}
+
 	m_game->getWindow().display();
 }
 
@@ -129,6 +150,22 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 	point.setPosition(sf::Vector2f(entityTransform.getPos().x - 1, entityTransform.getPos().y - 1));
 	point.setSize(sf::Vector2f(3, 3));
 	m_game->getWindow().draw(point);
+}
+
+void Scene_Main::renderTransition(const Vec2& viewPosition) {
+	if (m_transitionOpacity >= 255) {
+		m_fight = true;
+	}
+	
+	sf::Vector2u WINDOW_SIZE = m_game->getWindow().getSize();
+
+	sf::RectangleShape transition;
+	transition.setPosition(viewPosition.x, viewPosition.y);
+	transition.setSize(sf::Vector2f(WINDOW_SIZE.x, WINDOW_SIZE.y));
+	transition.setFillColor(sf::Color(0, 0, 0, m_transitionOpacity));
+	m_game->getWindow().draw(transition);
+
+	m_transitionOpacity += 8;
 }
 
 void Scene_Main::sCollision() {
@@ -231,13 +268,13 @@ void Scene_Main::sDoAction(const Action& action) {
 
 				if (m_textBoxSys.getText().empty()) {
 					m_textBoxSys.setText(m_game->getDialog(e->getTag()));
-					m_currentTextBox = 0;
+					m_textBoxSys.setCurrentBox(0);
 				}
-				else if (m_currentTextBox < m_textBoxSys.getBoxCount() - 1) {
-					m_currentTextBox++;
+				else if (m_textBoxSys.getCurrentBox() < m_textBoxSys.getBoxCount() - 1) {
+					m_textBoxSys.setCurrentBox(m_textBoxSys.getCurrentBox() + 1);
 				}
 				else {
-					m_currentTextBox = 0;
+					m_textBoxSys.setCurrentBox(0);
 					m_textBoxSys.setText("");
 					m_freezePlayer = false;
 				}
@@ -246,6 +283,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	}
 
 	if (action.getName() == "DEBUG" && action.getType() == "START") {
+		std::cout << m_player->getComponent<CStats>().hp << "\n";
 		m_game->setDebugMode(!m_game->isDebugMode());
 	}
 
@@ -275,6 +313,11 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	if (action.getName() == "PAUSE" && action.getType() == "START") {
 		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
+	}
+
+	if (action.getName() == "FIGHT" && action.getType() == "START") {
+		m_sceneChanged = true;
+		m_freezePlayer = true;
 	}
 }
 
@@ -371,6 +414,7 @@ void Scene_Main::spawnPlayer() {
 	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
 	entity->addComponent<CAnimation>();
+	entity->addComponent<CStats>(50, 50);
 	m_player = entity;
 }
 

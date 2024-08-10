@@ -80,5 +80,5 @@ void Scene_Pause::sDoAction(const Action& action) {
 }
 
 void Scene_Pause::onEnd() {
-	m_game->changeScene("main", m_game->getScene("main"));
+	m_game->changeScene("main", m_game->getScene("main"), true);
 }

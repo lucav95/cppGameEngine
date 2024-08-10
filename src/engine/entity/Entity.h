@@ -13,7 +13,8 @@ class Entity {
 		CInput,
 		CBoundingBox,
 		CAnimation,
-		CState
+		CState,
+		CStats
 	> ComponentTuple;
 
 	const size_t					m_id = 0;

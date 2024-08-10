@@ -8,11 +8,12 @@ class Scene_Main : public Scene {
 	Vec2					m_playerBox = Vec2(0.0f, 0.0f);
 	Vec2					m_enemyBox = Vec2(0.0f, 0.0f);
 	std::string				m_playerStandingTexture = "player";
-	std::string				m_boxText = "";
-	bool					m_dialogArrowShowing = false;
 	bool					m_freezePlayer = false;
 	TextBoxSystem			m_textBoxSys = nullptr;
-	int						m_currentTextBox = 0;
+	// das ist kacki
+	int						m_transitionOpacity = 0;
+	bool					m_sceneChanged = false;
+	bool					m_fight = false;
 
 	sf::View				m_camera;
 
@@ -26,6 +27,8 @@ class Scene_Main : public Scene {
 	void					handlePlayerMovement(const Action& action, CInput& playerInput);
 
 	void					renderBoundingBox(const std::shared_ptr<Entity>& entity);
+	void					renderTransition(const Vec2& viewPosition);
+	void					fight();
 
 	void					cameraToPlayer();
 	
