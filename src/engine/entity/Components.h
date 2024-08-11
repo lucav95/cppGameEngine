@@ -91,6 +91,7 @@ class CStats : public Component {
 public:
 	float maxHp;
 	float hp;
+	sf::Color color;
 
 	void damage(int damage) {
 		hp = damage > hp ? 0 : hp - damage;
@@ -99,6 +100,8 @@ public:
 	CStats() {
 		maxHp = 100;
 		hp = 100;
+		color = sf::Color::Red;
 	}
 	CStats(float maxHp, float health) : maxHp(maxHp), hp(health) {}
+	CStats(float maxHp, float health, sf::Color color) : maxHp(maxHp), hp(health), color(color) {}
 };
