@@ -40,7 +40,7 @@ class Scene_Main : public Scene {
 	void					spawnEntity(
 								const Vec2& pos, 
 								const Vec2& boundingBox,
-								const std::string name);
+								const std::string& name);
 
 	void					onEnd() override;
 

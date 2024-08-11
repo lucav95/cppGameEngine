@@ -418,7 +418,7 @@ void Scene_Main::spawnPlayer() {
 	m_player = entity;
 }
 
-void Scene_Main::spawnEntity(const Vec2& pos, const Vec2& boundingBox, const std::string name) {
+void Scene_Main::spawnEntity(const Vec2& pos, const Vec2& boundingBox, const std::string& name) {
 	auto e = m_entities.addEntity(name);
 	e->addComponent<CTransform>(pos, Vec2(0, 0), 0);
 	e->addComponent<CBoundingBox>(boundingBox);

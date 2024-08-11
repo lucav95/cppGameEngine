@@ -11,14 +11,34 @@ void EntityManager::update() {
 	}
 	m_toAdd.clear();
 	
-	// does m_entityMap have to be considered?
-	// todo: m_totalEntities HAS TO BE UPDATED
 	m_entities.erase(
 		std::remove_if(
 			m_entities.begin(), 
 			m_entities.end(), 
 			[](const std::shared_ptr<Entity>& e) { return !e->isActive(); }),
 		m_entities.end());
+
+	updateEntityMap();
+	m_totalEntities = m_entities.size();
+}
+
+void EntityManager::updateEntityMap() {
+	std::vector<std::string> deletedEntryTags;
+	for (auto& entry : m_entityMap) {
+		entry.second.erase(
+			std::remove_if(
+				entry.second.begin(),
+				entry.second.end(),
+				[](const std::shared_ptr<Entity>& e) { return !e->isActive(); }),
+			entry.second.end());
+
+		if (entry.second.empty()) {
+			deletedEntryTags.push_back(entry.first);
+		}
+	}
+	for (auto tag : deletedEntryTags) {
+		m_entityMap.erase(tag);
+	}
 }
 
 std::shared_ptr<Entity> EntityManager::addEntity(const std::string& tag) {

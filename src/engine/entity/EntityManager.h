@@ -15,6 +15,8 @@ class EntityManager {
 	EntityMap				m_entityMap;
 	size_t					m_totalEntities = 0;
 
+	void					updateEntityMap();
+
 public:
 	EntityManager();
 	
