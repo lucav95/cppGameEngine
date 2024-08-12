@@ -103,15 +103,15 @@ void Scene_Fight::renderHpText(int hp, int maxHp, const Vec2& pos) {
 }
 
 void Scene_Fight::sDoAction(const Action& action) {
-	if (action.getName() == "DAMAGE" && action.getType() == "START") {
+	if (action.getName() == "DAMAGE" && action.getType() == Action::START) {
 		m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().damage(8);
 	}
 
-	if (action.getName() == "GET_DAMAGE" && action.getType() == "START") {
+	if (action.getName() == "GET_DAMAGE" && action.getType() == Action::START) {
 		m_player->getComponent<CStats>().damage(8);
 	}
 
-	if (action.getName() == "QUIT" && action.getType() == "START") {
+	if (action.getName() == "QUIT" && action.getType() == Action::START) {
 		onEnd();
 	}
 }

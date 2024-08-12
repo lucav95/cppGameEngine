@@ -102,7 +102,7 @@ void GameEngine::sUserInput() {
 		if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
 			if (getCurrentScene()->getActionMap().find(event.key.code) == getCurrentScene()->getActionMap().end()) { continue; }
 
-			const std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
+			const Action::Type actionType = (event.type == sf::Event::KeyPressed) ? Action::START : Action::END;
 			getCurrentScene()->doAction(Action(getCurrentScene()->getActionMap().at(event.key.code), actionType));
 		}
 
@@ -110,24 +110,24 @@ void GameEngine::sUserInput() {
 
 		if (event.type == sf::Event::MouseButtonPressed) {
 			switch (event.mouseButton.button) {
-				case sf::Mouse::Left: { getCurrentScene()->doAction(Action("MOUSE_LEFT", "START", mousePos)); break; }
-				case sf::Mouse::Middle: { getCurrentScene()->doAction(Action("MOUSE_MIDDLE", "START", mousePos)); break; }
-				case sf::Mouse::Right: { getCurrentScene()->doAction(Action("MOUSE_RIGHT", "START", mousePos)); break; }
+			case sf::Mouse::Left: { getCurrentScene()->doAction(Action("MOUSE_LEFT", Action::START, mousePos)); break; }
+				case sf::Mouse::Middle: { getCurrentScene()->doAction(Action("MOUSE_MIDDLE", Action::START, mousePos)); break; }
+				case sf::Mouse::Right: { getCurrentScene()->doAction(Action("MOUSE_RIGHT", Action::START, mousePos)); break; }
 				default: break;
 			}
 		}
 
 		if (event.type == sf::Event::MouseButtonReleased) {
 			switch (event.mouseButton.button) {
-				case sf::Mouse::Left: { getCurrentScene()->doAction(Action("MOUSE_LEFT", "END", mousePos)); break; }
-				case sf::Mouse::Middle: { getCurrentScene()->doAction(Action("MOUSE_MIDDLE", "END", mousePos)); break; }
-				case sf::Mouse::Right: { getCurrentScene()->doAction(Action("MOUSE_RIGHT", "END", mousePos)); break; }
+			case sf::Mouse::Left: { getCurrentScene()->doAction(Action("MOUSE_LEFT", Action::END, mousePos)); break; }
+				case sf::Mouse::Middle: { getCurrentScene()->doAction(Action("MOUSE_MIDDLE", Action::END, mousePos)); break; }
+				case sf::Mouse::Right: { getCurrentScene()->doAction(Action("MOUSE_RIGHT", Action::END, mousePos)); break; }
 				default: break;
 			}
 		}
 
 		if (event.type == sf::Event::MouseMoved) {
-			getCurrentScene()->doAction(Action("MOUSE_MOVE", "START", mousePos));
+			getCurrentScene()->doAction(Action("MOUSE_MOVE", Action::START, mousePos));
 		}
 
 	}

@@ -56,25 +56,25 @@ void Scene_Pause::sRender() {
 void Scene_Pause::sDoAction(const Action& action) {
 	float menuPointStep = 40;
 
-	if (action.getName() == "UP" && action.getType() == "START") {
+	if (action.getName() == "UP" && action.getType() == Action::START) {
 		if (m_menuIndex > 0) {
 			m_cursorPosY -= menuPointStep;
 			m_menuIndex--;
 		}
 	}
-	if (action.getName() == "LEFT" && action.getType() == "START") {
+	if (action.getName() == "LEFT" && action.getType() == Action::START) {
 
 	}
-	if (action.getName() == "DOWN" && action.getType() == "START") {
+	if (action.getName() == "DOWN" && action.getType() == Action::START) {
 		if (m_menuIndex < m_menuPoints.size() - 1) {
 			m_cursorPosY += menuPointStep;
 			m_menuIndex++;
 		}
 	}
-	if (action.getName() == "RIGHT" && action.getType() == "START") {
+	if (action.getName() == "RIGHT" && action.getType() == Action::START) {
 
 	}
-	if (action.getName() == "CANCEL" && action.getType() == "START") {
+	if (action.getName() == "CANCEL" && action.getType() == Action::START) {
 		onEnd();
 	}
 }

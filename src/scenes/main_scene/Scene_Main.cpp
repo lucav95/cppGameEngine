@@ -23,8 +23,8 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::Escape, "PAUSE");
 	registerAction(sf::Keyboard::O, "FIGHT");
 
-	spawnEntity(Vec2(120, 300), Vec2(100, 100), "enemy");
-	spawnEntity(Vec2(300, 300), Vec2(100, 100), "enemy");
+	spawnEntity(Vec2(160, 300), Vec2(100, 300), "enemy");
+	spawnEntity(Vec2(160, 300), Vec2(300, 100), "enemy");
 	spawnEntity(Vec2(500, 100), Vec2(90, 130), "door");
 	spawnEntity(Vec2(620, 150), Vec2(60, 60), "sign1");
 	spawnEntity(Vec2(770, 150), Vec2(60, 60), "sign2");
@@ -256,7 +256,7 @@ void Scene_Main::sMovement() {
 
 void Scene_Main::sDoAction(const Action& action) {
 
-	if (action.getName() == "ACCEPT" && action.getType() == "START") {
+	if (action.getName() == "ACCEPT" && action.getType() == Action::START) {
 
 		for (auto e : m_entities.getEntities()) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
@@ -282,7 +282,7 @@ void Scene_Main::sDoAction(const Action& action) {
 		}
 	}
 
-	if (action.getName() == "DEBUG" && action.getType() == "START") {
+	if (action.getName() == "DEBUG" && action.getType() == Action::START) {
 		std::cout << m_player->getComponent<CStats>().hp << "\n";
 		m_game->setDebugMode(!m_game->isDebugMode());
 	}
@@ -311,11 +311,11 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	handlePlayerMovement(action, playerInput);
 
-	if (action.getName() == "PAUSE" && action.getType() == "START") {
+	if (action.getName() == "PAUSE" && action.getType() == Action::START) {
 		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
 	}
 
-	if (action.getName() == "FIGHT" && action.getType() == "START") {
+	if (action.getName() == "FIGHT" && action.getType() == Action::START) {
 		m_sceneChanged = true;
 		m_freezePlayer = true;
 	}
@@ -323,11 +323,11 @@ void Scene_Main::sDoAction(const Action& action) {
 
 void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput) {
 	if (action.getName() == "UP") {
-		if (action.getType() == "START") {
+		if (action.getType() == Action::START) {
 			playerInput.up = true;
 			changeAnimation(m_player, "player_animation_up", true);
 		}
-		if (action.getType() == "END") {
+		if (action.getType() == Action::END) {
 			checkAnimationDirections(false, true, true, true);
 			m_playerStandingTexture = "player_up";
 			playerInput.up = false;
@@ -335,11 +335,11 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	}
 
 	if (action.getName() == "DOWN") {
-		if (action.getType() == "START") {
+		if (action.getType() == Action::START) {
 			playerInput.down = true;
 			changeAnimation(m_player, "player_animation", true);
 		}
-		if (action.getType() == "END") {
+		if (action.getType() == Action::END) {
 			checkAnimationDirections(true, false, true, true);
 			m_playerStandingTexture = "player";
 			playerInput.down = false;
@@ -347,11 +347,11 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	}
 
 	if (action.getName() == "LEFT") {
-		if (action.getType() == "START") {
+		if (action.getType() == Action::START) {
 			playerInput.left = true;
 			changeAnimation(m_player, "player_animation_left", true);
 		}
-		if (action.getType() == "END") {
+		if (action.getType() == Action::END) {
 			checkAnimationDirections(true, true, false, true);
 			m_playerStandingTexture = "player_left";
 			playerInput.left = false;
@@ -359,11 +359,11 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	}
 
 	if (action.getName() == "RIGHT") {
-		if (action.getType() == "START") {
+		if (action.getType() == Action::START) {
 			playerInput.right = true;
 			changeAnimation(m_player, "player_animation_right", true);
 		}
-		if (action.getType() == "END") {
+		if (action.getType() == Action::END) {
 			checkAnimationDirections(true, true, true, false);
 			m_playerStandingTexture = "player_right";
 			playerInput.right = false;

@@ -44,7 +44,7 @@ void Scene_Menu::sDoAction(const Action& action) {
 			mousePos.y <= m_start.y + m_start.h;
 	}
 
-	if (action.getName() == "MOUSE_LEFT" && action.getType() == "START" && m_startHover) {
+	if (action.getName() == "MOUSE_LEFT" && action.getType() == Action::START && m_startHover) {
 		onEnd();
 	}
 }
