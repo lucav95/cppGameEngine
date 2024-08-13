@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Scene.h"
+#include "../engine/MenuSystem.h"
 
 class Scene_Fight : public Scene {
 
 	std::shared_ptr<Entity>		m_player;
 	Vec2						m_viewPosition;
+	MenuSystem					m_menu;
 
 	void						onEnd() override;
 	void						init();

@@ -10,6 +10,8 @@ Scene_Fight::Scene_Fight(GameEngine* game, std::shared_ptr<Entity>& player) : Sc
 
 void Scene_Fight::init() {
 	registerAction(sf::Keyboard::Enter, "DAMAGE");
+	registerAction(sf::Keyboard::Up, "UP");
+	registerAction(sf::Keyboard::Down, "DOWN");
 	registerAction(sf::Keyboard::Space, "GET_DAMAGE");
 	registerAction(sf::Keyboard::Escape, "QUIT");
 
@@ -17,6 +19,18 @@ void Scene_Fight::init() {
 	m_viewPosition = Physics::getViewPosition(
 		m_game->getWindow().getView(), 
 		Vec2(windowSize.x, windowSize.y));
+	
+	std::vector<std::string> attacks;
+	attacks.push_back("Fire attack");
+	attacks.push_back("Ice attack");
+	attacks.push_back("Poison attack");
+	attacks.push_back("Lightning attack");
+
+	m_menu = MenuSystem(
+		m_game, 
+		Vec2(m_viewPosition.x + 800, m_viewPosition.y + 500), 
+		attacks, 
+		m_game->getAssets().getFont("pixelmix"));
 
 	getEnemy();
 }
@@ -55,25 +69,26 @@ void Scene_Fight::sRender() {
 	player.setPosition(m_viewPosition.x + 150, m_viewPosition.y + 400);
 	m_game->getWindow().draw(player);
 
-	sf::RectangleShape enemyRect;
-	enemyRect.setSize(sf::Vector2f(250, 250));
-	enemyRect.setPosition(m_viewPosition.x + 800, m_viewPosition.y + 50);
-	enemyRect.setFillColor(m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().color);
-	m_game->getWindow().draw(enemyRect);
+	sf::RectangleShape enemy;
+	enemy.setSize(sf::Vector2f(250, 250));
+	enemy.setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
+	enemy.setFillColor(m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().color);
+	m_game->getWindow().draw(enemy);
 
 	renderStats();
+	m_menu.render();
 
 	m_game->getWindow().display();
 }
 
 void Scene_Fight::renderStats() {
 	auto& playerStats = m_player->getComponent<CStats>();
-	renderHpBar(playerStats.hp, playerStats.maxHp, Vec2(m_viewPosition.x + 400, m_viewPosition.y + 400));
-	renderHpText(playerStats.hp, playerStats.maxHp, Vec2(m_viewPosition.x + 400, m_viewPosition.y + 450));
+	renderHpBar(playerStats.hp, playerStats.maxHp, Vec2(m_viewPosition.x + 460, m_viewPosition.y + 400));
+	renderHpText(playerStats.hp, playerStats.maxHp, Vec2(m_viewPosition.x + 465, m_viewPosition.y + 404));
 
 	auto& enemyStats = m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>();
-	renderHpBar(enemyStats.hp, enemyStats.maxHp, Vec2(m_viewPosition.x + 550, m_viewPosition.y + 100));
-	renderHpText(enemyStats.hp, enemyStats.maxHp, Vec2(m_viewPosition.x + 550, m_viewPosition.y + 150));
+	renderHpBar(enemyStats.hp, enemyStats.maxHp, Vec2(m_viewPosition.x + 600, m_viewPosition.y + 100));
+	renderHpText(enemyStats.hp, enemyStats.maxHp, Vec2(m_viewPosition.x + 605, m_viewPosition.y + 104));
 }
 
 void Scene_Fight::renderHpBar(float hp, float maxHp, const Vec2& pos) {
@@ -85,6 +100,14 @@ void Scene_Fight::renderHpBar(float hp, float maxHp, const Vec2& pos) {
 	hpBar.setSize(sf::Vector2f(HP_BAR_WIDTH, 30));
 	hpBar.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(hpBar);
+
+	sf::RectangleShape hpBorder;
+	hpBorder.setFillColor(sf::Color(0, 0, 0, 0));
+	hpBorder.setOutlineThickness(2);
+	hpBorder.setOutlineColor(sf::Color::White);
+	hpBorder.setSize(sf::Vector2f(200, 30));
+	hpBorder.setPosition(pos.x, pos.y);
+	m_game->getWindow().draw(hpBorder);
 }
 
 void Scene_Fight::renderHpText(int hp, int maxHp, const Vec2& pos) {
@@ -103,6 +126,14 @@ void Scene_Fight::renderHpText(int hp, int maxHp, const Vec2& pos) {
 }
 
 void Scene_Fight::sDoAction(const Action& action) {
+	if (action.getName() == "UP" && action.getType() == Action::START) {
+		m_menu.updateCursorBy(-1);
+	}
+
+	if (action.getName() == "DOWN" && action.getType() == Action::START) {
+		m_menu.updateCursorBy(1);
+	}
+
 	if (action.getName() == "DAMAGE" && action.getType() == Action::START) {
 		m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().damage(8);
 	}

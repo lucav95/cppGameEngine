@@ -20,6 +20,6 @@ public:
 
 private:
 	std::string			m_name = "NONE";
-	sf::Vector2i		m_mousePos = sf::Vector2i(0, 0);
 	Type				m_type = Type::NONE;
+	sf::Vector2i		m_mousePos = sf::Vector2i(0, 0);
 };

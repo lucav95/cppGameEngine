@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Scene.h"
+#include "../engine/MenuSystem.h"
 
 class Scene_Pause : public Scene {
 
 	std::vector<std::string>	m_menuPoints;
-	float						m_cursorPosY = 100;
-	int							m_menuIndex = 0;
-	Vec2						m_windowPos;
+	MenuSystem					m_menuSystem;
 
 	void						onEnd() override;
 	void						init();
