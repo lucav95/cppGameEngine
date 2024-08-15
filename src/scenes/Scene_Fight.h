@@ -9,17 +9,29 @@ class Scene_Fight : public Scene {
 		FIRE, ICE, POISON, LIGHTNING
 	};
 
+	struct DamagePointsAnimation {
+		bool running = false;
+		float gradient = 0;
+		int points = 0;
+		int opacity = 255;
+		Vec2 pos = { 0, 0 };
+	} m_damagePointsAnimation;
+	
 	std::shared_ptr<Entity>		m_player;
 	std::shared_ptr<Entity>		m_attack;
 	Vec2						m_viewPosition;
 	MenuSystem					m_menu;
-	bool						m_attackAnimation = false;
+	bool						m_attackAnimationRunning = false;
 
 	void						onEnd() override;
 	void						init();
 	void						getEnemy();
+	void						fillDamagePointsAnimation(int damage);
+	void						attack(const std::string& animationName, int damage);
 
 	void						renderStats();
+	void						renderAttackAnimation();
+	void						renderDamagePointsAnimation(int speed);
 	void						renderHpText(int hp, int maxHp, const Vec2& pos);
 	void						renderHpBar(float hp, float maxHp, const Vec2& pos);
 

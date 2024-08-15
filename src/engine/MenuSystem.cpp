@@ -25,7 +25,7 @@ void MenuSystem::render() {
 		textY += (m_scale.y * 40);
 	}
 	sf::RectangleShape cursor(sf::Vector2f(30, 30));
-	cursor.setFillColor(sf::Color::Red);
+	cursor.setTexture(&m_game->getAssets().getTexture("menu_cursor"));
 	cursor.setPosition(m_pos.x + 20, m_pos.y + m_cursorPosY);
 	cursor.setScale(m_scale.x, m_scale.y);
 	m_game->getWindow().draw(cursor);
