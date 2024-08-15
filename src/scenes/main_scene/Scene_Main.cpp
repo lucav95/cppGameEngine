@@ -69,8 +69,8 @@ void Scene_Main::sRender() {
 	background.setPosition(-200, -200);
 	m_game->getWindow().draw(background);
 
-	for (auto e : m_entities.getEntities()) {
-		
+	for (auto& e : m_entities.getEntities()) {
+
 		if (e->getTag() == "player") {
 		
 			auto& playerInput = m_player->getComponent<CInput>();
@@ -89,10 +89,8 @@ void Scene_Main::sRender() {
 				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
 			}
 
-			auto& entityTransform = e->getComponent<CTransform>();
-			playerRect.setPosition(
-				entityTransform.getPos().x - (playerRect.getSize().x / 2),
-				entityTransform.getPos().y - (playerRect.getSize().y / 2));
+			Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(playerRect.getSize().x, playerRect.getSize().y);
+			playerRect.setPosition(pos.x, pos.y);
 			// Maybe draw the sprite without the playerRect
 			m_game->getWindow().draw(playerRect);
 
@@ -100,18 +98,16 @@ void Scene_Main::sRender() {
 
 		if (e->getTag() == "door") {
 			sf::RectangleShape door(sf::Vector2f(90.0f, 130.0f));
-			door.setPosition(
-				e->getComponent<CTransform>().getPos().x - (door.getSize().x / 2),
-				e->getComponent<CTransform>().getPos().y - (door.getSize().y / 2));
+			Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(door.getSize().x, door.getSize().y);
+			door.setPosition(pos.x, pos.y);
 			door.setTexture(&m_game->getAssets().getTexture("door"));
 			m_game->getWindow().draw(door);
 		}
 
 		if (e->getTag() == "sign1" || e->getTag() == "sign2") {
 			sf::RectangleShape sign(sf::Vector2f(60, 60));
-			sign.setPosition(
-				e->getComponent<CTransform>().getPos().x - (sign.getSize().x / 2),
-				e->getComponent<CTransform>().getPos().y - (sign.getSize().y / 2));
+			Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(sign.getSize().x, sign.getSize().y);
+			sign.setPosition(pos.x, pos.y);
 			sign.setTexture(&m_game->getAssets().getTexture("sign"));
 			m_game->getWindow().draw(sign);
 		}
@@ -137,11 +133,10 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 	auto& entityTransform = entity->getComponent<CTransform>();
 
 	sf::RectangleShape boundingBox;
-		boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
-		boundingBox.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
-		boundingBox.setPosition(
-			entityTransform.getPos().x - (boundingBox.getSize().x / 2) + entityBoundingBox.relativePosition.x,
-			entityTransform.getPos().y - (boundingBox.getSize().y / 2) + entityBoundingBox.relativePosition.y);
+	boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
+	boundingBox.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
+	auto& pos = entityBoundingBox.getTopLeftPos(entityTransform.getPos().x, entityTransform.getPos().y);
+	boundingBox.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(boundingBox);
 
 	sf::RectangleShape point;
@@ -154,6 +149,8 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 void Scene_Main::renderTransition(const Vec2& viewPosition) {
 	if (m_transitionOpacity >= 255) {
 		m_fight = true;
+		// letzter frame der overworld wird aus irgend einem grund gerendert
+		return;
 	}
 	
 	sf::Vector2u WINDOW_SIZE = m_game->getWindow().getSize();
@@ -171,7 +168,7 @@ void Scene_Main::sCollision() {
 
 	auto& playerTransform = m_player->getComponent<CTransform>();
 
-	for (auto e : m_entities.getEntities()) {
+	for (auto& e : m_entities.getEntities()) {
 
 		if (e->getTag() == "enemy" || e->getTag() == "sign1" || e->getTag() == "sign2") {
 
@@ -259,7 +256,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	if (action.getName() == "ACCEPT" && action.getType() == Action::START) {
 
-		for (auto e : m_entities.getEntities()) {
+		for (auto& e : m_entities.getEntities()) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
 			if ((e->getTag() == "sign1" || e->getTag() == "sign2") && dist <= 40) {
 

@@ -5,6 +5,10 @@
 
 class Scene_Fight : public Scene {
 
+	enum AttackAnimation {
+		FIRE, ICE, POISON, LIGHTNING
+	};
+
 	std::shared_ptr<Entity>		m_player;
 	std::shared_ptr<Entity>		m_attack;
 	Vec2						m_viewPosition;

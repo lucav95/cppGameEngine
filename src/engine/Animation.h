@@ -7,6 +7,7 @@ class Animation {
 	sf::Sprite			m_sprite;
 	size_t				m_frameCount = 1;
 	size_t				m_currentFrame = 0;
+	size_t				m_lastFrame = 0;
 	Vec2				m_frameSize = { 1.0f, 1.0f };
 	size_t				m_speed = 0; // frame delay
 	size_t				m_aliveDuration = 0;

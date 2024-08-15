@@ -37,6 +37,12 @@ public:
 	Vec2& getPos() { return pos; }
 	Vec2& getPrevPos() { return prevPos; }
 
+	const Vec2& getTopLeftPos(float width, float height) const {
+		return Vec2(
+			pos.x - (width / 2),
+			pos.y - (height / 2));
+	}
+
 	CTransform() {}
 	CTransform(const Vec2& p, const Vec2& v, float a) 
 		: pos(p), prevPos(p), velocity(v), angle(a) {}
@@ -47,6 +53,12 @@ public:
 	Vec2 size;
 	Vec2 halfSize;
 	Vec2 relativePosition = Vec2(0, 0);
+
+	const Vec2& getTopLeftPos(float x, float y) const {
+		return Vec2(
+			x - (size.x / 2) + relativePosition.x,
+			y - (size.y / 2) + relativePosition.y);
+	}
 
 	CBoundingBox() {}
 	CBoundingBox(const Vec2& s) : size(s), halfSize(s.x / 2, s.y / 2) {}

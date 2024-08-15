@@ -86,19 +86,18 @@ void Scene_Fight::sRender() {
 	if (m_attackAnimation) {
 		auto& animation = m_attack->getComponent<CAnimation>();
 
-		sf::RectangleShape attack;
-		auto attackPos = m_attack->getComponent<CTransform>().getPos();
-		attack.setPosition(attackPos.x, attackPos.y);
-		attack.setSize(sf::Vector2f(250, 250));
-		attack.setTexture(animation.animation.getSprite().getTexture());
-		attack.setTextureRect(animation.animation.getSprite().getTextureRect());
-		m_game->getWindow().draw(attack);
-
 		if (animation.animation.hasEnded()) {
 			m_attackAnimation = false;
-			animation.animation.reset();
 		}
 		else {
+			sf::RectangleShape attack;
+			auto attackPos = m_attack->getComponent<CTransform>().getPos();
+			attack.setPosition(attackPos.x, attackPos.y);
+			attack.setSize(sf::Vector2f(250, 250));
+			attack.setTexture(animation.animation.getSprite().getTexture());
+			attack.setTextureRect(animation.animation.getSprite().getTextureRect());
+			m_game->getWindow().draw(attack);
+
 			animation.animation.update();
 		}
 
@@ -162,17 +161,15 @@ void Scene_Fight::sDoAction(const Action& action) {
 
 	if (action.getName() == "SELECT" && action.getType() == Action::START) {
 		auto& attackAnimation = m_attack->getComponent<CAnimation>();
-		if (m_menu.getIndex() == 0 && attackAnimation.animation.getName() != "fire_animation") {
-			attackAnimation.animation = m_game->getAssets().getAnimation("fire_animation");
-		}
-		else if (m_menu.getIndex() == 1 && attackAnimation.animation.getName() != "ice_animation") {
-			attackAnimation.animation = m_game->getAssets().getAnimation("ice_animation");
-		}
-		else if (m_menu.getIndex() == 2 && attackAnimation.animation.getName() != "poison_animation") {
-			attackAnimation.animation = m_game->getAssets().getAnimation("poison_animation");
-		}
-		else if (m_menu.getIndex() == 3 && attackAnimation.animation.getName() != "lightning_animation") {
-			attackAnimation.animation = m_game->getAssets().getAnimation("lightning_animation");
+		switch (m_menu.getIndex()) {
+			case FIRE: 
+				attackAnimation.animation = m_game->getAssets().getAnimation("fire_animation"); break;
+			case ICE:
+				attackAnimation.animation = m_game->getAssets().getAnimation("ice_animation"); break;
+			case POISON:
+				attackAnimation.animation = m_game->getAssets().getAnimation("poison_animation"); break;
+			case LIGHTNING:
+				attackAnimation.animation = m_game->getAssets().getAnimation("lightning_animation"); break;
 		}
 		m_attackAnimation = true;
 		m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().damage(8);

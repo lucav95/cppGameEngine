@@ -12,6 +12,5 @@ ANI assets/textures/player_animation_right.png player_animation_right 4 5
 ANI assets/textures/fire_animation.png fire_animation 3 20
 ANI assets/textures/ice_animation.png ice_animation 3 20
 ANI assets/textures/poison_animation.png poison_animation 3 20
-ANI assets/textures/lightning_animation.png lightning_animation 3 20
-ANI assets/textures/red_blue.png red_blue 2 10
+ANI assets/textures/lightning_animation.png lightning_animation 4 5
 FON assets/fonts/pixelmix.ttf pixelmix

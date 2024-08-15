@@ -18,6 +18,7 @@ Animation::Animation(const std::string& name, const sf::Texture& t, size_t frame
 
 void Animation::update() {
 	m_aliveDuration++;
+	m_lastFrame = m_currentFrame;
 	m_currentFrame = (m_aliveDuration / m_speed) % m_frameCount;
 	m_sprite.setTextureRect(sf::IntRect((m_currentFrame * m_frameSize.x), 0, m_frameSize.x, m_frameSize.y));
 }
@@ -41,5 +42,5 @@ const sf::Sprite& Animation::getSprite() const {
 }
 
 bool Animation::hasEnded() const {
-	return m_currentFrame == m_frameCount - 1;
+	return m_lastFrame == m_frameCount - 1 && m_currentFrame == 0;
 }
