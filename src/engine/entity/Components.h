@@ -75,16 +75,24 @@ public:
 class CAnimation : public Component {
 public:
 	Animation animation;
-	bool repeat = false;
 	CAnimation() {}
-	CAnimation(Animation& animation, bool repeat) : animation(animation), repeat(repeat) {}
+	CAnimation(Animation& animation) : animation(animation) {}
 };
 
 class CState : public Component {
+	std::string m_state;
 public:
-	std::string state;
+
+	void set(const std::string& state) {
+		m_state = state;
+	}
+
+	const std::string& get() const {
+		return m_state;
+	}
+
 	CState() {}
-	CState(const std::string& state) : state(state) {}
+	CState(const std::string& state) : m_state(state) {}
 };
 
 class CStats : public Component {

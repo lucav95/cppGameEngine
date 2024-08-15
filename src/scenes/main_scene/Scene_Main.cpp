@@ -55,7 +55,7 @@ void Scene_Main::update() {
 void Scene_Main::fight() {
 	m_transitionOpacity = 0;
 	m_sceneChanged = false;
-	m_freezePlayer = false;
+	m_player->getComponent<CState>().set("ready");
 	m_fight = false;
 	m_game->changeScene("fight", std::make_shared<Scene_Fight>(m_game, m_player));
 }
@@ -74,19 +74,18 @@ void Scene_Main::sRender() {
 		if (e->getTag() == "player") {
 		
 			auto& playerInput = m_player->getComponent<CInput>();
+			auto& animationComponent = m_player->getComponent<CAnimation>();
 
 			sf::RectangleShape playerRect(sf::Vector2f(80, 80));
 			if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
 
-				auto& animationComponent = m_player->getComponent<CAnimation>();
 				playerRect.setTexture(animationComponent.animation.getSprite().getTexture());
 				playerRect.setTextureRect(animationComponent.animation.getSprite().getTextureRect());
 				
-				if (animationComponent.repeat || (!animationComponent.repeat && !animationComponent.animation.hasEnded())) {
-					animationComponent.animation.update();
-				}
+				animationComponent.animation.update();
 			}
 			else {
+				animationComponent.animation.reset();
 				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
 			}
 
@@ -222,7 +221,7 @@ void Scene_Main::sMovement() {
 	int x = 0;
 	int y = 0;
 
-	if (m_freezePlayer) {
+	if (m_player->getComponent<CState>().get() == "freeze") {
 		return;
 	}
 
@@ -256,14 +255,16 @@ void Scene_Main::sMovement() {
 
 void Scene_Main::sDoAction(const Action& action) {
 
+	auto& playerState = m_player->getComponent<CState>();
+
 	if (action.getName() == "ACCEPT" && action.getType() == Action::START) {
 
 		for (auto e : m_entities.getEntities()) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
 			if ((e->getTag() == "sign1" || e->getTag() == "sign2") && dist <= 40) {
 
-				if (!m_freezePlayer) {
-					m_freezePlayer = true;
+				if (playerState.get() == "ready") {
+					playerState.set("freeze");
 				}
 
 				if (m_textBoxSys.getText().empty()) {
@@ -276,7 +277,7 @@ void Scene_Main::sDoAction(const Action& action) {
 				else {
 					m_textBoxSys.setCurrentBox(0);
 					m_textBoxSys.setText("");
-					m_freezePlayer = false;
+					playerState.set("ready");
 				}
 			}
 		}
@@ -289,7 +290,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	auto& playerInput = m_player->getComponent<CInput>();
 
-	if (m_freezePlayer) {
+	if (playerState.get() == "freeze") {
 		if (playerInput.up) {
 			playerInput.up = false;
 			m_playerStandingTexture = "player_up";
@@ -317,7 +318,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	if (action.getName() == "FIGHT" && action.getType() == Action::START) {
 		m_sceneChanged = true;
-		m_freezePlayer = true;
+		playerState.set("freeze");
 	}
 }
 
@@ -325,7 +326,7 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	if (action.getName() == "UP") {
 		if (action.getType() == Action::START) {
 			playerInput.up = true;
-			changeAnimation(m_player, "player_animation_up", true);
+			changeAnimation(m_player, "player_animation_up");
 		}
 		if (action.getType() == Action::END) {
 			checkAnimationDirections(false, true, true, true);
@@ -337,7 +338,7 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	if (action.getName() == "DOWN") {
 		if (action.getType() == Action::START) {
 			playerInput.down = true;
-			changeAnimation(m_player, "player_animation", true);
+			changeAnimation(m_player, "player_animation");
 		}
 		if (action.getType() == Action::END) {
 			checkAnimationDirections(true, false, true, true);
@@ -349,7 +350,7 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	if (action.getName() == "LEFT") {
 		if (action.getType() == Action::START) {
 			playerInput.left = true;
-			changeAnimation(m_player, "player_animation_left", true);
+			changeAnimation(m_player, "player_animation_left");
 		}
 		if (action.getType() == Action::END) {
 			checkAnimationDirections(true, true, false, true);
@@ -361,7 +362,7 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	if (action.getName() == "RIGHT") {
 		if (action.getType() == Action::START) {
 			playerInput.right = true;
-			changeAnimation(m_player, "player_animation_right", true);
+			changeAnimation(m_player, "player_animation_right");
 		}
 		if (action.getType() == Action::END) {
 			checkAnimationDirections(true, true, true, false);
@@ -377,25 +378,25 @@ void Scene_Main::checkAnimationDirections(bool up, bool down, bool left, bool ri
 	auto& playerInput = m_player->getComponent<CInput>();
 
 	if (up && playerInput.up) {
-		changeAnimation(m_player, "player_animation_up", true);
+		changeAnimation(m_player, "player_animation_up");
 	}
 	if (left && playerInput.left) {
-		changeAnimation(m_player, "player_animation_left", true);
+		changeAnimation(m_player, "player_animation_left");
 	}
 	if (down && playerInput.down) {
-		changeAnimation(m_player, "player_animation", true);
+		changeAnimation(m_player, "player_animation");
 	}
 	if (right && playerInput.right) {
-		changeAnimation(m_player, "player_animation_right", true);
+		changeAnimation(m_player, "player_animation_right");
 	}
 }
 
-void Scene_Main::changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName, bool repeat) {
+void Scene_Main::changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName) {
 	if (!entity->hasComponent<CAnimation>()) {
 		return;
 	}
 	if (entity->getComponent<CAnimation>().animation.getName() != animationName) {
-		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName), repeat);
+		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName));
 	}
 }
 
@@ -415,6 +416,7 @@ void Scene_Main::spawnPlayer() {
 	entity->addComponent<CInput>();
 	entity->addComponent<CAnimation>();
 	entity->addComponent<CStats>(50, 50);
+	entity->addComponent<CState>("ready");
 	m_player = entity;
 }
 

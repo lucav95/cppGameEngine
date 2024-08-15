@@ -6,8 +6,10 @@
 class Scene_Fight : public Scene {
 
 	std::shared_ptr<Entity>		m_player;
+	std::shared_ptr<Entity>		m_attack;
 	Vec2						m_viewPosition;
 	MenuSystem					m_menu;
+	bool						m_attackAnimation = false;
 
 	void						onEnd() override;
 	void						init();

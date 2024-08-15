@@ -22,6 +22,12 @@ void Animation::update() {
 	m_sprite.setTextureRect(sf::IntRect((m_currentFrame * m_frameSize.x), 0, m_frameSize.x, m_frameSize.y));
 }
 
+void Animation::reset() {
+	m_aliveDuration = 0;
+	m_currentFrame = 0;
+	m_sprite.setTextureRect(sf::IntRect(0, 0, m_frameSize.x, m_frameSize.y));
+}
+
 const std::string& Animation::getName() const {
 	return m_name;
 }

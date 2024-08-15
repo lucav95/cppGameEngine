@@ -9,7 +9,7 @@ Scene_Fight::Scene_Fight(GameEngine* game, std::shared_ptr<Entity>& player) : Sc
 }
 
 void Scene_Fight::init() {
-	registerAction(sf::Keyboard::Enter, "DAMAGE");
+	registerAction(sf::Keyboard::Enter, "SELECT");
 	registerAction(sf::Keyboard::Up, "UP");
 	registerAction(sf::Keyboard::Down, "DOWN");
 	registerAction(sf::Keyboard::Space, "GET_DAMAGE");
@@ -33,6 +33,11 @@ void Scene_Fight::init() {
 		m_game->getAssets().getFont("pixelmix"));
 
 	getEnemy();
+
+	m_attack = m_entities.addEntity("attack");
+	m_attack->addComponent<CTransform>();
+	m_attack->getComponent<CTransform>().setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
+	m_attack->addComponent<CAnimation>();
 }
 
 void Scene_Fight::getEnemy() {
@@ -77,6 +82,27 @@ void Scene_Fight::sRender() {
 
 	renderStats();
 	m_menu.render();
+
+	if (m_attackAnimation) {
+		auto& animation = m_attack->getComponent<CAnimation>();
+
+		sf::RectangleShape attack;
+		auto attackPos = m_attack->getComponent<CTransform>().getPos();
+		attack.setPosition(attackPos.x, attackPos.y);
+		attack.setSize(sf::Vector2f(250, 250));
+		attack.setTexture(animation.animation.getSprite().getTexture());
+		attack.setTextureRect(animation.animation.getSprite().getTextureRect());
+		m_game->getWindow().draw(attack);
+
+		if (animation.animation.hasEnded()) {
+			m_attackAnimation = false;
+			animation.animation.reset();
+		}
+		else {
+			animation.animation.update();
+		}
+
+	}
 
 	m_game->getWindow().display();
 }
@@ -134,7 +160,21 @@ void Scene_Fight::sDoAction(const Action& action) {
 		m_menu.updateCursorBy(1);
 	}
 
-	if (action.getName() == "DAMAGE" && action.getType() == Action::START) {
+	if (action.getName() == "SELECT" && action.getType() == Action::START) {
+		auto& attackAnimation = m_attack->getComponent<CAnimation>();
+		if (m_menu.getIndex() == 0 && attackAnimation.animation.getName() != "fire_animation") {
+			attackAnimation.animation = m_game->getAssets().getAnimation("fire_animation");
+		}
+		else if (m_menu.getIndex() == 1 && attackAnimation.animation.getName() != "ice_animation") {
+			attackAnimation.animation = m_game->getAssets().getAnimation("ice_animation");
+		}
+		else if (m_menu.getIndex() == 2 && attackAnimation.animation.getName() != "poison_animation") {
+			attackAnimation.animation = m_game->getAssets().getAnimation("poison_animation");
+		}
+		else if (m_menu.getIndex() == 3 && attackAnimation.animation.getName() != "lightning_animation") {
+			attackAnimation.animation = m_game->getAssets().getAnimation("lightning_animation");
+		}
+		m_attackAnimation = true;
 		m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().damage(8);
 	}
 
@@ -148,6 +188,5 @@ void Scene_Fight::sDoAction(const Action& action) {
 }
 
 void Scene_Fight::onEnd() {
-	m_entities.getEntities("fight_enemy").at(0)->destroy();
 	m_game->changeScene("main", m_game->getScene("main"), true);
 }
