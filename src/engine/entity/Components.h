@@ -3,6 +3,7 @@
 #include "../Vec2.h"
 #include "../Animation.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 class Component {
 public:
@@ -84,44 +85,107 @@ public:
 	CInput() {}
 };
 
-class CAnimation : public Component {
+class CGraphics : public Component {
 public:
 	Animation animation;
-	CAnimation() {}
-	CAnimation(Animation& animation) : animation(animation) {}
+	std::string texture;
+	CGraphics() {}
+	CGraphics(const std::string& texture) : texture(texture) {}
+	CGraphics(Animation& animation) : animation(animation) {}
 };
 
 class CState : public Component {
-	std::string m_state;
-public:
 
-	void set(const std::string& state) {
-		m_state = state;
+	std::string m_customState;
+	int m_status = NONE;
+
+public:
+	enum Status { NONE, POISONED, BURNING, FROZEN, PARALIZED };
+
+	void setCustomState(const std::string& state) {
+		m_customState = state;
 	}
 
-	const std::string& get() const {
-		return m_state;
+	void setStatus(int status) {
+		m_status = status;
+	}
+
+	const std::string& getCustomState() {
+		return m_customState;
+	}
+
+	int getStatus() {
+		return m_status;
 	}
 
 	CState() {}
-	CState(const std::string& state) : m_state(state) {}
+	CState(const std::string& customState) : m_customState(customState) {}
+	CState(int status) : m_status(status) {}
 };
 
 class CStats : public Component {
 public:
+	enum Type {
+		NONE, FIRE, ICE, POISON, LIGHTNING
+	};
+
+	struct Attack {
+		std::string name = "";
+		int damage = 0;
+		Type type = NONE;
+	};
+
+	std::vector<Attack> attacks;
 	float maxHp;
 	float hp;
-	sf::Color color;
+	int weakness;
+	int resistance;
 
-	void damage(int damage) {
+	int damage(const Attack attack) {
+		int attackPercent = (rand() % 25) + 75; // 75% - 100%
+
+		float damage = attack.damage;
+		if (attack.type == weakness && weakness != NONE) {
+			damage += 5;
+		}
+		if (attack.type == resistance && resistance != NONE) {
+			damage -= 5;
+		}
+		damage = damage <= 0 ? 1 : (damage / 100) * attackPercent;
 		hp = damage > hp ? 0 : hp - damage;
+
+		return damage;
+	}
+
+	int damage(int damage) {
+		int damage_taken = damage > hp ? 0 : hp - damage;
+		hp = damage_taken;
+		return damage_taken;
+	}
+
+	void addAttack(const std::string& name, int damage, CStats::Type type) {
+		attacks.push_back({name, damage, type});
+	}
+
+	const Attack& getAttack(const std::string& name) const {
+		for (auto& attack : attacks) {
+			if (attack.name == name) {
+				return attack;
+			}
+		}
+		std::cout << "Attack '" << name << "' not found\n";
+		return { "", 0, NONE };
 	}
 
 	CStats() {
 		maxHp = 100;
 		hp = 100;
-		color = sf::Color::Red;
+		weakness = NONE;
+		resistance = NONE;
 	}
-	CStats(float maxHp, float health) : maxHp(maxHp), hp(health) {}
-	CStats(float maxHp, float health, sf::Color color) : maxHp(maxHp), hp(health), color(color) {}
+	CStats(float maxHp, float health) : maxHp(maxHp), hp(health) {
+		weakness = NONE;
+		resistance = NONE;
+	}
+	CStats(float maxHp, float health, int weakness, int resistance) : maxHp(maxHp), hp(health), weakness(weakness), resistance(resistance) {}
 };

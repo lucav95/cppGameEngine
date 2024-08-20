@@ -22,10 +22,7 @@ void Scene_Menu::update() {
 void Scene_Menu::sRender() {
 	m_game->getWindow().clear();
 	
-	sf::Text heading;
-	heading.setFont(m_game->getAssets().getFont("pixelmix"));
-	heading.setString("Start");
-	heading.setCharacterSize(45);
+	sf::Text heading("Start", m_game->getAssets().getFont("pixelmix"), 45);
 	heading.setFillColor(m_startHover ? sf::Color::Green : sf::Color::White);
 	heading.setPosition(m_start.x, m_start.y);
 	m_game->getWindow().draw(heading);

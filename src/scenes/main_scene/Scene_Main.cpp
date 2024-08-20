@@ -55,7 +55,7 @@ void Scene_Main::update() {
 void Scene_Main::fight() {
 	m_transitionOpacity = 0;
 	m_sceneChanged = false;
-	m_player->getComponent<CState>().set("ready");
+	m_player->getComponent<CState>().setCustomState("ready");
 	m_fight = false;
 	m_game->changeScene("fight", std::make_shared<Scene_Fight>(m_game, m_player));
 }
@@ -74,7 +74,7 @@ void Scene_Main::sRender() {
 		if (e->getTag() == "player") {
 		
 			auto& playerInput = m_player->getComponent<CInput>();
-			auto& animationComponent = m_player->getComponent<CAnimation>();
+			auto& animationComponent = m_player->getComponent<CGraphics>();
 
 			sf::RectangleShape playerRect(sf::Vector2f(80, 80));
 			if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
@@ -132,17 +132,15 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 	auto& entityBoundingBox = entity->getComponent<CBoundingBox>();
 	auto& entityTransform = entity->getComponent<CTransform>();
 
-	sf::RectangleShape boundingBox;
+	sf::RectangleShape boundingBox(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
 	boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
-	boundingBox.setSize(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
 	auto& pos = entityBoundingBox.getTopLeftPos(entityTransform.getPos().x, entityTransform.getPos().y);
 	boundingBox.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(boundingBox);
 
-	sf::RectangleShape point;
+	sf::RectangleShape point(sf::Vector2f(3, 3));
 	point.setFillColor(sf::Color(0, 255, 0));
 	point.setPosition(sf::Vector2f(entityTransform.getPos().x - 1, entityTransform.getPos().y - 1));
-	point.setSize(sf::Vector2f(3, 3));
 	m_game->getWindow().draw(point);
 }
 
@@ -155,9 +153,8 @@ void Scene_Main::renderTransition(const Vec2& viewPosition) {
 	
 	sf::Vector2u WINDOW_SIZE = m_game->getWindow().getSize();
 
-	sf::RectangleShape transition;
+	sf::RectangleShape transition(sf::Vector2f(WINDOW_SIZE.x, WINDOW_SIZE.y));
 	transition.setPosition(viewPosition.x, viewPosition.y);
-	transition.setSize(sf::Vector2f(WINDOW_SIZE.x, WINDOW_SIZE.y));
 	transition.setFillColor(sf::Color(0, 0, 0, m_transitionOpacity));
 	m_game->getWindow().draw(transition);
 
@@ -218,7 +215,7 @@ void Scene_Main::sMovement() {
 	int x = 0;
 	int y = 0;
 
-	if (m_player->getComponent<CState>().get() == "freeze") {
+	if (m_player->getComponent<CState>().getCustomState() == "freeze") {
 		return;
 	}
 
@@ -260,8 +257,8 @@ void Scene_Main::sDoAction(const Action& action) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
 			if ((e->getTag() == "sign1" || e->getTag() == "sign2") && dist <= 40) {
 
-				if (playerState.get() == "ready") {
-					playerState.set("freeze");
+				if (playerState.getCustomState() == "ready") {
+					playerState.setCustomState("freeze");
 				}
 
 				if (m_textBoxSys.getText().empty()) {
@@ -274,7 +271,7 @@ void Scene_Main::sDoAction(const Action& action) {
 				else {
 					m_textBoxSys.setCurrentBox(0);
 					m_textBoxSys.setText("");
-					playerState.set("ready");
+					playerState.setCustomState("ready");
 				}
 			}
 		}
@@ -287,7 +284,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	auto& playerInput = m_player->getComponent<CInput>();
 
-	if (playerState.get() == "freeze") {
+	if (playerState.getCustomState() == "freeze") {
 		if (playerInput.up) {
 			playerInput.up = false;
 			m_playerStandingTexture = "player_up";
@@ -315,7 +312,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	if (action.getName() == "FIGHT" && action.getType() == Action::START) {
 		m_sceneChanged = true;
-		playerState.set("freeze");
+		playerState.setCustomState("freeze");
 	}
 }
 
@@ -389,11 +386,11 @@ void Scene_Main::checkAnimationDirections(bool up, bool down, bool left, bool ri
 }
 
 void Scene_Main::changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName) {
-	if (!entity->hasComponent<CAnimation>()) {
+	if (!entity->hasComponent<CGraphics>()) {
 		return;
 	}
-	if (entity->getComponent<CAnimation>().animation.getName() != animationName) {
-		entity->addComponent<CAnimation>(m_game->getAssets().getAnimation(animationName));
+	if (entity->getComponent<CGraphics>().animation.getName() != animationName) {
+		entity->addComponent<CGraphics>(m_game->getAssets().getAnimation(animationName));
 	}
 }
 
@@ -411,9 +408,15 @@ void Scene_Main::spawnPlayer() {
 	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
 	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
-	entity->addComponent<CAnimation>();
-	entity->addComponent<CStats>(50, 50);
+	entity->addComponent<CGraphics>();
 	entity->addComponent<CState>("ready");
+
+	auto& stats = entity->addComponent<CStats>(50, 50);
+	stats.addAttack("Fire", 11, CStats::FIRE);
+	stats.addAttack("Ice", 8, CStats::ICE);
+	stats.addAttack("Poison", 3, CStats::POISON);
+	stats.addAttack("Lightning", 10, CStats::LIGHTNING);
+
 	m_player = entity;
 }
 

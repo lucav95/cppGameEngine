@@ -5,7 +5,7 @@
 
 class Scene_Fight : public Scene {
 
-	enum AttackAnimation {
+	enum AttackType {
 		FIRE, ICE, POISON, LIGHTNING
 	};
 
@@ -18,6 +18,7 @@ class Scene_Fight : public Scene {
 	} m_damagePointsAnimation;
 	
 	std::shared_ptr<Entity>		m_player;
+	std::shared_ptr<Entity>		m_enemy;
 	std::shared_ptr<Entity>		m_attack;
 	Vec2						m_viewPosition;
 	MenuSystem					m_menu;
@@ -27,7 +28,7 @@ class Scene_Fight : public Scene {
 	void						init();
 	void						getEnemy();
 	void						fillDamagePointsAnimation(int damage);
-	void						attack(const std::string& animationName, int damage);
+	void						attack(const std::string& animationName, const std::string& attackName);
 
 	void						renderStats();
 	void						renderAttackAnimation();

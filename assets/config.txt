@@ -6,6 +6,9 @@ TEX assets/textures/door.png door
 TEX assets/textures/sign.png sign
 TEX assets/textures/text_arrow.png text_arrow
 TEX assets/textures/menu_cursor.png menu_cursor
+TEX assets/textures/tree_enemy.png tree_enemy
+TEX assets/textures/water_enemy.png water_enemy
+TEX assets/textures/fire_enemy.png fire_enemy
 ANI assets/textures/player_animation.png player_animation 4 5
 ANI assets/textures/player_animation_left.png player_animation_left 4 5
 ANI assets/textures/player_animation_up.png player_animation_up 4 5

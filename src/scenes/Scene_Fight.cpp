@@ -19,12 +19,11 @@ void Scene_Fight::init() {
 	m_viewPosition = Physics::getViewPosition(
 		m_game->getWindow().getView(), 
 		Vec2(windowSize.x, windowSize.y));
-	
+
 	std::vector<std::string> attacks;
-	attacks.push_back("Fire attack");
-	attacks.push_back("Ice attack");
-	attacks.push_back("Poison attack");
-	attacks.push_back("Lightning attack");
+	for (auto& attack : m_player->getComponent<CStats>().attacks) {
+		attacks.push_back(attack.name);
+	}
 
 	m_menu = MenuSystem(
 		m_game, 
@@ -35,23 +34,29 @@ void Scene_Fight::init() {
 	getEnemy();
 
 	m_attack = m_entities.addEntity("attack");
-	m_attack->addComponent<CTransform>();
-	m_attack->getComponent<CTransform>().setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
-	m_attack->addComponent<CAnimation>();
+	m_attack->addComponent<CTransform>().setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
+	m_attack->addComponent<CGraphics>();
 }
 
 void Scene_Fight::getEnemy() {
-	auto enemy = m_entities.addEntity("fight_enemy");
+	int random = (std::rand() % 3) + 1; // 1 - 3
+	m_enemy = m_entities.addEntity("fight_enemy");
 
-	int random = (std::rand() % 2) + 1;
 	switch (random) {
 		case 1: 
-			enemy->addComponent<CStats>(120, 120, sf::Color::Red);
+			m_enemy->addComponent<CGraphics>("fire_enemy");
+			m_enemy->addComponent<CStats>(110, 110, CStats::ICE, CStats::LIGHTNING);
 			break;
 		case 2: 
-			enemy->addComponent<CStats>(90, 90, sf::Color::Blue);
+			m_enemy->addComponent<CGraphics>("tree_enemy");
+			m_enemy->addComponent<CStats>(150, 150, CStats::FIRE, CStats::POISON);
+			break;
+		case 3:
+			m_enemy->addComponent<CGraphics>("water_enemy");
+			m_enemy->addComponent<CStats>(90, 90, CStats::LIGHTNING, CStats::FIRE);
 			break;
 	}
+	m_enemy->addComponent<CState>(CState::NONE);
 }
 
 void Scene_Fight::update() {
@@ -68,16 +73,14 @@ void Scene_Fight::update() {
 void Scene_Fight::sRender() {
 	m_game->getWindow().clear();
 	
-	sf::RectangleShape player;
+	sf::RectangleShape player(sf::Vector2f(300, 300));
 	player.setTexture(&m_game->getAssets().getTexture("player_up"));
-	player.setSize(sf::Vector2f(300, 300));
 	player.setPosition(m_viewPosition.x + 150, m_viewPosition.y + 400);
 	m_game->getWindow().draw(player);
 
-	sf::RectangleShape enemy;
-	enemy.setSize(sf::Vector2f(250, 250));
+	sf::RectangleShape enemy(sf::Vector2f(250, 250));
 	enemy.setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
-	enemy.setFillColor(m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().color);
+	enemy.setTexture(&m_game->getAssets().getTexture(m_enemy->getComponent<CGraphics>().texture));
 	m_game->getWindow().draw(enemy);
 
 	renderStats();
@@ -99,7 +102,7 @@ void Scene_Fight::renderStats() {
 	renderHpBar(playerStats.hp, playerStats.maxHp, Vec2(m_viewPosition.x + 460, m_viewPosition.y + 400));
 	renderHpText(playerStats.hp, playerStats.maxHp, Vec2(m_viewPosition.x + 465, m_viewPosition.y + 404));
 
-	auto& enemyStats = m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>();
+	auto& enemyStats = m_enemy->getComponent<CStats>();
 	renderHpBar(enemyStats.hp, enemyStats.maxHp, Vec2(m_viewPosition.x + 600, m_viewPosition.y + 100));
 	renderHpText(enemyStats.hp, enemyStats.maxHp, Vec2(m_viewPosition.x + 605, m_viewPosition.y + 104));
 }
@@ -108,52 +111,46 @@ void Scene_Fight::renderHpBar(float hp, float maxHp, const Vec2& pos) {
 	float HP_PERCENT = (hp / maxHp) * 100;
 	float HP_BAR_WIDTH = (200.0f / 100) * HP_PERCENT;
 
-	sf::RectangleShape hpBar;
+	sf::RectangleShape hpBar(sf::Vector2f(HP_BAR_WIDTH, 30));
 	hpBar.setFillColor(sf::Color::Red);
-	hpBar.setSize(sf::Vector2f(HP_BAR_WIDTH, 30));
 	hpBar.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(hpBar);
 
-	sf::RectangleShape hpBorder;
+	sf::RectangleShape hpBorder(sf::Vector2f(200, 30));
 	hpBorder.setFillColor(sf::Color(0, 0, 0, 0));
 	hpBorder.setOutlineThickness(2);
 	hpBorder.setOutlineColor(sf::Color::White);
-	hpBorder.setSize(sf::Vector2f(200, 30));
 	hpBorder.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(hpBorder);
 }
 
 void Scene_Fight::renderAttackAnimation() {
-	auto& animation = m_attack->getComponent<CAnimation>();
+	auto& graphics = m_attack->getComponent<CGraphics>();
 
-	if (animation.animation.hasEnded()) {
+	if (graphics.animation.hasEnded()) {
 		m_attackAnimationRunning = false;
 	}
 	else {
-		sf::RectangleShape attack;
+		sf::RectangleShape attack(sf::Vector2f(250, 250));
 		auto& attackPos = m_attack->getComponent<CTransform>().getPos();
 		attack.setPosition(attackPos.x, attackPos.y);
-		attack.setSize(sf::Vector2f(250, 250));
-		attack.setTexture(animation.animation.getSprite().getTexture());
-		attack.setTextureRect(animation.animation.getSprite().getTextureRect());
+		attack.setTexture(graphics.animation.getSprite().getTexture());
+		attack.setTextureRect(graphics.animation.getSprite().getTextureRect());
 		m_game->getWindow().draw(attack);
 
-		animation.animation.update();
+		graphics.animation.update();
 	}
 }
 
 void Scene_Fight::renderHpText(int hp, int maxHp, const Vec2& pos) {
-	sf::Text hpText;
-	hpText.setCharacterSize(20);
-	hpText.setFillColor(sf::Color::White);
-	hpText.setFont(m_game->getAssets().getFont("pixelmix"));
-	hpText.setPosition(pos.x, pos.y);
-
-	hpText.setString(
+	sf::Text hpText(
 		std::string("HP: ") +
 		std::to_string(hp) +
 		std::string(" / ") +
-		std::to_string(maxHp));
+		std::to_string(maxHp),
+		m_game->getAssets().getFont("pixelmix"), 20);
+	hpText.setFillColor(sf::Color::White);
+	hpText.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(hpText);
 }
 
@@ -182,16 +179,12 @@ void Scene_Fight::sDoAction(const Action& action) {
 	}
 
 	if (action.getName() == "SELECT" && action.getType() == Action::START) {
-		auto& attackAnimation = m_attack->getComponent<CAnimation>();
+		auto& attackAnimation = m_attack->getComponent<CGraphics>();
 		switch (m_menu.getIndex()) {
-			case FIRE: 
-				attack("fire_animation", 8); break;
-			case ICE:
-				attack("ice_animation", 5); break;
-			case POISON:
-				attack("poison_animation", 3); break;
-			case LIGHTNING:
-				attack("lightning_animation", 10); break;
+			case FIRE:		attack("fire_animation", "Fire"); break;
+			case ICE:		attack("ice_animation", "Ice"); break;
+			case POISON:	attack("poison_animation", "Poison"); break;
+			case LIGHTNING:	attack("lightning_animation", "Lightning"); break;
 		}
 	}
 
@@ -204,10 +197,10 @@ void Scene_Fight::sDoAction(const Action& action) {
 	}
 }
 
-void Scene_Fight::attack(const std::string& animationName, int damage) {
+void Scene_Fight::attack(const std::string& animationName, const std::string& attackName) {
 	if (!m_attackAnimationRunning) {
-		m_attack->getComponent<CAnimation>().animation = m_game->getAssets().getAnimation(animationName);
-		m_entities.getEntities("fight_enemy").at(0)->getComponent<CStats>().damage(damage);
+		m_attack->getComponent<CGraphics>().animation = m_game->getAssets().getAnimation(animationName);
+		int damage = m_enemy->getComponent<CStats>().damage(m_player->getComponent<CStats>().getAttack(attackName));
 		fillDamagePointsAnimation(damage);
 		m_attackAnimationRunning = true;
 	}

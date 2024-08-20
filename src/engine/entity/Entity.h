@@ -12,7 +12,7 @@ class Entity {
 		CLifespan,
 		CInput,
 		CBoundingBox,
-		CAnimation,
+		CGraphics,
 		CState,
 		CStats
 	> ComponentTuple;

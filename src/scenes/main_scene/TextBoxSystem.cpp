@@ -20,11 +20,8 @@ void TextBoxSystem::render(int currentFrame) {
 	box.setPosition(VIEW_POSITION.x + 140, VIEW_POSITION.y + 500);
 	m_game->getWindow().draw(box);
 
-	sf::Text renderText;
+	sf::Text renderText(m_boxes.at(m_currentBox), m_game->getAssets().getFont("pixelmix"), 30);
 	renderText.setFillColor(sf::Color::White);
-	renderText.setCharacterSize(30);
-	renderText.setFont(m_game->getAssets().getFont("pixelmix"));
-	renderText.setString(m_boxes.at(m_currentBox));
 	renderText.setLineSpacing(1.4);
 	renderText.setPosition(VIEW_POSITION.x + 160, VIEW_POSITION.y + 520);
 	m_game->getWindow().draw(renderText);
@@ -41,10 +38,7 @@ void TextBoxSystem::render(int currentFrame) {
 
 void TextBoxSystem::setBoxes() {
 	m_boxes.clear();
-
-	sf::Text boxText;
-	boxText.setCharacterSize(30);
-	boxText.setFont(m_game->getAssets().getFont("pixelmix"));
+	sf::Text boxText("", m_game->getAssets().getFont("pixelmix"), 30);
 
 	std::stringstream ss(m_text);
 	std::string token;
