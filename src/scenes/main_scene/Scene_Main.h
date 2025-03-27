@@ -5,11 +5,12 @@
 
 class Scene_Main : public Scene {
 
+	//typedef std::vector<std::shared_ptr<Entity>> EntityVec;
+
 	Vec2					m_playerBox = Vec2(0.0f, 0.0f);
 	Vec2					m_enemyBox = Vec2(0.0f, 0.0f);
-	std::string				m_playerStandingTexture = "player";
 	TextBoxSystem			m_textBoxSys = nullptr;
-	// das ist kacki
+	// bessere lösung finden
 	int						m_transitionOpacity = 0;
 	bool					m_sceneChanged = false;
 	bool					m_fight = false;
@@ -21,11 +22,14 @@ class Scene_Main : public Scene {
 
 	void					init();
 
-	void					checkAnimationDirections(bool up, bool down, bool left, bool right);
+	void					correctAnimationDirections(bool up, bool down, bool left, bool right);
 	void					changeAnimation(const std::shared_ptr<Entity>& entity, const std::string& animationName);
 	void					handlePlayerMovement(const Action& action, CInput& playerInput);
 
-	void					renderBoundingBox(const std::shared_ptr<Entity>& entity);
+	void					renderPlayer(const std::shared_ptr<Entity>& e);
+	void					renderDoor(const std::shared_ptr<Entity>& e);
+	void					renderSign(const std::shared_ptr<Entity>& e);
+	void					renderBoundingBox(const std::shared_ptr<Entity>& e);
 	void					renderTransition(const Vec2& viewPosition);
 	void					fight();
 

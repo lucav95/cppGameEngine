@@ -39,6 +39,7 @@ void Scene_Main::init() {
 }
 
 void Scene_Main::update() {
+
 	m_entities.update();
 	sMovement();
 	sCollision();
@@ -48,7 +49,7 @@ void Scene_Main::update() {
 	if (m_fight) {
 		fight();
 	}
-
+	
 	m_currentFrame++;
 }
 
@@ -72,47 +73,19 @@ void Scene_Main::sRender() {
 	for (auto& e : m_entities.getEntities()) {
 
 		if (e->getTag() == "player") {
-		
-			auto& playerInput = m_player->getComponent<CInput>();
-			auto& animationComponent = m_player->getComponent<CGraphics>();
-
-			sf::RectangleShape playerRect(sf::Vector2f(80, 80));
-			if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
-
-				playerRect.setTexture(animationComponent.animation.getSprite().getTexture());
-				playerRect.setTextureRect(animationComponent.animation.getSprite().getTextureRect());
-				
-				animationComponent.animation.update();
-			}
-			else {
-				animationComponent.animation.reset();
-				playerRect.setTexture(&m_game->getAssets().getTexture(m_playerStandingTexture));
-			}
-
-			Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(playerRect.getSize().x, playerRect.getSize().y);
-			playerRect.setPosition(pos.x, pos.y);
-			// Maybe draw the sprite without the playerRect
-			m_game->getWindow().draw(playerRect);
-
+			renderPlayer(e);
 		}
-
 		if (e->getTag() == "door") {
-			sf::RectangleShape door(sf::Vector2f(90.0f, 130.0f));
-			Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(door.getSize().x, door.getSize().y);
-			door.setPosition(pos.x, pos.y);
-			door.setTexture(&m_game->getAssets().getTexture("door"));
-			m_game->getWindow().draw(door);
+			renderDoor(e);
 		}
-
 		if (e->getTag() == "sign1" || e->getTag() == "sign2") {
-			sf::RectangleShape sign(sf::Vector2f(60, 60));
-			Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(sign.getSize().x, sign.getSize().y);
-			sign.setPosition(pos.x, pos.y);
-			sign.setTexture(&m_game->getAssets().getTexture("sign"));
-			m_game->getWindow().draw(sign);
+			renderSign(e);
 		}
-		renderBoundingBox(e);
+		if (m_game->isDebugMode()) {
+			renderBoundingBox(e);
+		}
 	}
+
 	if (!m_textBoxSys.getText().empty()) {
 		m_textBoxSys.render(m_currentFrame);
 	}
@@ -126,11 +99,50 @@ void Scene_Main::sRender() {
 	m_game->getWindow().display();
 }
 
-void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
-	if (!m_game->isDebugMode()) return;
+void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
+	auto& playerInput = m_player->getComponent<CInput>();
+	auto& graphicsComponent = m_player->getComponent<CGraphics>();
 
-	auto& entityBoundingBox = entity->getComponent<CBoundingBox>();
-	auto& entityTransform = entity->getComponent<CTransform>();
+	sf::RectangleShape playerRect(sf::Vector2f(80, 80));
+	if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
+
+		playerRect.setTexture(graphicsComponent.animation.getSprite().getTexture());
+		playerRect.setTextureRect(graphicsComponent.animation.getSprite().getTextureRect());
+
+		graphicsComponent.animation.update();
+	}
+	else {
+		graphicsComponent.animation.reset();
+		playerRect.setTexture(&m_game->getAssets().getTexture(m_player->getComponent<CGraphics>().texture));
+	}
+
+	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(playerRect.getSize().x, playerRect.getSize().y);
+	playerRect.setPosition(pos.x, pos.y);
+	// Maybe draw the sprite without the playerRect
+	m_game->getWindow().draw(playerRect);
+}
+
+void Scene_Main::renderDoor(const std::shared_ptr<Entity>& e) {
+	sf::RectangleShape door(sf::Vector2f(90.0f, 130.0f));
+	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(door.getSize().x, door.getSize().y);
+	door.setPosition(pos.x, pos.y);
+	door.setTexture(&m_game->getAssets().getTexture("door"));
+	m_game->getWindow().draw(door);
+}
+
+void Scene_Main::renderSign(const std::shared_ptr<Entity>& e) {
+	sf::RectangleShape sign(sf::Vector2f(60, 60));
+	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(sign.getSize().x, sign.getSize().y);
+	sign.setPosition(pos.x, pos.y);
+	sign.setTexture(&m_game->getAssets().getTexture("sign"));
+	m_game->getWindow().draw(sign);
+}
+
+void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& e) {
+	if (!e->hasComponent<CBoundingBox>()) return;
+
+	auto& entityBoundingBox = e->getComponent<CBoundingBox>();
+	auto& entityTransform = e->getComponent<CTransform>();
 
 	sf::RectangleShape boundingBox(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
 	boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
@@ -146,9 +158,8 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& entity) {
 
 void Scene_Main::renderTransition(const Vec2& viewPosition) {
 	if (m_transitionOpacity >= 255) {
+		m_transitionOpacity = 255;
 		m_fight = true;
-		// letzter frame der overworld wird aus irgend einem grund gerendert
-		return;
 	}
 	
 	sf::Vector2u WINDOW_SIZE = m_game->getWindow().getSize();
@@ -162,7 +173,6 @@ void Scene_Main::renderTransition(const Vec2& viewPosition) {
 }
 
 void Scene_Main::sCollision() {
-
 	auto& playerTransform = m_player->getComponent<CTransform>();
 
 	for (auto& e : m_entities.getEntities()) {
@@ -208,7 +218,6 @@ void Scene_Main::sCollision() {
 }
 
 void Scene_Main::sMovement() {
-
 	auto& playerTransform = m_player->getComponent<CTransform>();
 
 	playerTransform.velocity = { 0, 0 };
@@ -248,7 +257,6 @@ void Scene_Main::sMovement() {
 }
 
 void Scene_Main::sDoAction(const Action& action) {
-
 	auto& playerState = m_player->getComponent<CState>();
 
 	if (action.getName() == "ACCEPT" && action.getType() == Action::START) {
@@ -287,19 +295,19 @@ void Scene_Main::sDoAction(const Action& action) {
 	if (playerState.getCustomState() == "freeze") {
 		if (playerInput.up) {
 			playerInput.up = false;
-			m_playerStandingTexture = "player_up";
+			m_player->getComponent<CGraphics>().texture = "player_up";
 		}
 		else if (playerInput.down) {
 			playerInput.down = false;
-			m_playerStandingTexture = "player";
+			m_player->getComponent<CGraphics>().texture = "player";
 		}
 		else if (playerInput.left) {
 			playerInput.left = false;
-			m_playerStandingTexture = "player_left";
+			m_player->getComponent<CGraphics>().texture = "player_left";
 		}
 		else if (playerInput.right) {
 			playerInput.right = false;
-			m_playerStandingTexture = "player_right";
+			m_player->getComponent<CGraphics>().texture = "player_right";
 		}
 		return;
 	}
@@ -323,8 +331,8 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 			changeAnimation(m_player, "player_animation_up");
 		}
 		if (action.getType() == Action::END) {
-			checkAnimationDirections(false, true, true, true);
-			m_playerStandingTexture = "player_up";
+			correctAnimationDirections(false, true, true, true);
+			m_player->getComponent<CGraphics>().texture = "player_up";
 			playerInput.up = false;
 		}
 	}
@@ -335,8 +343,8 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 			changeAnimation(m_player, "player_animation");
 		}
 		if (action.getType() == Action::END) {
-			checkAnimationDirections(true, false, true, true);
-			m_playerStandingTexture = "player";
+			correctAnimationDirections(true, false, true, true);
+			m_player->getComponent<CGraphics>().texture = "player";
 			playerInput.down = false;
 		}
 	}
@@ -347,8 +355,8 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 			changeAnimation(m_player, "player_animation_left");
 		}
 		if (action.getType() == Action::END) {
-			checkAnimationDirections(true, true, false, true);
-			m_playerStandingTexture = "player_left";
+			correctAnimationDirections(true, true, false, true);
+			m_player->getComponent<CGraphics>().texture = "player_left";
 			playerInput.left = false;
 		}
 	}
@@ -359,16 +367,15 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 			changeAnimation(m_player, "player_animation_right");
 		}
 		if (action.getType() == Action::END) {
-			checkAnimationDirections(true, true, true, false);
-			m_playerStandingTexture = "player_right";
+			correctAnimationDirections(true, true, true, false);
+			m_player->getComponent<CGraphics>().texture = "player_right";
 			playerInput.right = false;
 		}
 	}
 }
 
-// if multiple direction were pressed, the animation would be stuck on the last released direction
-void Scene_Main::checkAnimationDirections(bool up, bool down, bool left, bool right) {
-
+// if multiple directions were pressed, the animation would be stuck on the last released direction
+void Scene_Main::correctAnimationDirections(bool up, bool down, bool left, bool right) {
 	auto& playerInput = m_player->getComponent<CInput>();
 
 	if (up && playerInput.up) {
@@ -408,7 +415,7 @@ void Scene_Main::spawnPlayer() {
 	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
 	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
-	entity->addComponent<CGraphics>();
+	entity->addComponent<CGraphics>("player");
 	entity->addComponent<CState>("ready");
 
 	auto& stats = entity->addComponent<CStats>(50, 50);

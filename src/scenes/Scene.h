@@ -14,7 +14,7 @@ protected:
 	GameEngine*					m_game = nullptr;
 	EntityManager				m_entities;
 	int							m_currentFrame = 0;
-	std::map<int, std::string>	m_actionMap;
+	IntStringMap				m_actionMap; // input key / action name
 	bool						m_paused = false;
 	bool						m_hasEnded = false;
 

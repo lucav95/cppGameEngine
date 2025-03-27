@@ -14,9 +14,21 @@ class Scene_Fight : public Scene {
 		float gradient = 0;
 		int points = 0;
 		int opacity = 255;
+		int speed = 0;
 		Vec2 pos = { 0, 0 };
 	} m_damagePointsAnimation;
+
+	struct InfoAnimation {
+		bool running = false;
+		int framesUntilEnd = 0;
+		std::string text = "";
+		// um die hp vorm angriff zu speichern
+		int currentPlayerHp = 0;
+		int currentEnemyHp = 0;
+	} m_infoAnimation;
 	
+	sf::Shader					m_shader;
+
 	std::shared_ptr<Entity>		m_player;
 	std::shared_ptr<Entity>		m_enemy;
 	std::shared_ptr<Entity>		m_attack;
@@ -27,12 +39,15 @@ class Scene_Fight : public Scene {
 	void						onEnd() override;
 	void						init();
 	void						getEnemy();
-	void						fillDamagePointsAnimation(int damage);
-	void						attack(const std::string& animationName, const std::string& attackName);
+	void						fillDamagePointsAnimation(int damage, const Vec2& pos, int speed);
+	void						attack(const std::string& animationName, const std::string& attackName, bool againstEnemy);
 
+	void						renderPlayer();
+	void						renderEnemy();
 	void						renderStats();
+	void						renderInfoAnimation();
 	void						renderAttackAnimation();
-	void						renderDamagePointsAnimation(int speed);
+	void						renderDamagePointsAnimation();
 	void						renderHpText(int hp, int maxHp, const Vec2& pos);
 	void						renderHpBar(float hp, float maxHp, const Vec2& pos);
 

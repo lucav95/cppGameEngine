@@ -43,6 +43,9 @@ void GameEngine::loadAssets(const std::string& configPath) {
 			fin >> path >> name;
 			m_assets.addFont(name, path);
 		}
+		if (header == "SHA") {
+			fin >> shader;
+		}
 	}
 	fin.close();
 }
@@ -100,6 +103,7 @@ void GameEngine::sUserInput() {
 		if (event.type == sf::Event::Closed) m_running = false;
 		
 		if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+			// not a key of a registered action
 			if (getCurrentScene()->getActionMap().find(event.key.code) == getCurrentScene()->getActionMap().end()) { continue; }
 
 			const Action::Type actionType = (event.type == sf::Event::KeyPressed) ? Action::START : Action::END;
@@ -150,7 +154,7 @@ bool GameEngine::isDebugMode() const {
 }
 
 bool GameEngine::isRunning() {
-	return m_running & m_window.isOpen(); // bit-wise comparison?
+	return m_running & m_window.isOpen();
 }
 
 void GameEngine::update() {

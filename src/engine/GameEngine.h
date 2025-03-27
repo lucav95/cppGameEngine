@@ -25,6 +25,8 @@ class GameEngine {
 public:
 	GameEngine(const std::string& configPath, const std::string& dialogPath);
 
+	std::string				shader;
+
 	void					changeScene(
 								const std::string& sceneName, 
 								std::shared_ptr<Scene> scene, 

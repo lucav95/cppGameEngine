@@ -53,6 +53,7 @@ class CBoundingBox : public Component {
 public:
 	Vec2 size;
 	Vec2 halfSize;
+	// Offset der BoundingBox relativ zum Mittelpunkt
 	Vec2 relativePosition = Vec2(0, 0);
 
 	const Vec2& getTopLeftPos(float x, float y) const {

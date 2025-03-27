@@ -18,3 +18,4 @@ ANI assets/textures/ice_animation.png ice_animation 3 20
 ANI assets/textures/poison_animation.png poison_animation 3 20
 ANI assets/textures/lightning_animation.png lightning_animation 4 5
 FON assets/fonts/pixelmix.ttf pixelmix
+SHA assets/shaders/shader_poisoned.frag
