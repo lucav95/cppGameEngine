@@ -4,11 +4,15 @@
 #include <fstream>
 #include <sstream>
 
-GameEngine::GameEngine(const std::string& configPath, const std::string& dialogPath) {
+GameEngine::GameEngine(
+				const std::string& configPath, 
+				const std::string& dialogPath) {
 	init(configPath, dialogPath);
 }
 
-void GameEngine::init(const std::string& configPath, const std::string& dialogPath) {
+void GameEngine::init(
+				const std::string& configPath, 
+				const std::string& dialogPath) {
 	loadAssets(configPath);
 	loadDialog(dialogPath);
 
@@ -65,6 +69,46 @@ void GameEngine::loadDialog(const std::string& dialogPath) {
 		m_dialogMap[row.at(0)] = row.at(1);
 	}
 	fin.close();
+}
+
+// shape ; entity name ; texture name (0 if null) ; Xposition ; Yposition ; width ; height ; 
+// BoundingBox width ; BoundingBox height ; BoundingBox relative X ; BoundingBox relative Y
+void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& entities) {
+	std::fstream fin(gameMapPath);
+
+	// vielleicht array
+	std::string shape;
+	std::string name;
+	std::string txtName;
+	std::string xPos;
+	std::string yPos;
+	std::string w;
+	std::string h;
+	std::string bbw;
+	std::string bbh;
+	std::string bbrpX;
+	std::string bbrpY;
+	
+	while (fin >> shape) {
+		if (shape == "RECT") {
+			fin >> name >> txtName >> xPos >> yPos >> w >> h >> bbw >> bbh >> bbrpX >> bbrpY;
+			auto e = entities.addEntity(name);
+			
+			if (txtName != "0") {
+				e->addComponent<CGraphics>(txtName);
+			}
+			e->addComponent<CTransform>(
+				Vec2(std::stof(xPos), std::stof(yPos)),
+				Vec2(0.0, 0.0),
+				0,
+				Vec2(std::stof(w), std::stof(h)));
+			if (std::stof(bbw) > 0 && std::stof(bbh) > 0) {
+				e->addComponent<CBoundingBox>(
+					Vec2(std::stof(bbw), std::stof(bbh)),
+					Vec2(std::stof(bbrpX), std::stof(bbrpY)));
+			}
+		}
+	}
 }
 
 void GameEngine::run() {

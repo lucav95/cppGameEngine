@@ -14,6 +14,7 @@ class CTransform : public Component {
 	Vec2 pos = { 0.0, 0.0 };
 	Vec2 prevPos = { 0.0, 0.0 };
 public:
+	Vec2 size = { 0.0, 0.0 };
 	Vec2 scale = { 1.0, 1.0 };
 	Vec2 velocity = { 0.0, 0.0 };
 	float angle = 0;
@@ -38,15 +39,17 @@ public:
 	Vec2& getPos() { return pos; }
 	Vec2& getPrevPos() { return prevPos; }
 
-	const Vec2& getTopLeftPos(float width, float height) const {
+	const Vec2& getTopLeftPos() const {
 		return Vec2(
-			pos.x - (width / 2),
-			pos.y - (height / 2));
+			pos.x - (size.x / 2),
+			pos.y - (size.y / 2));
 	}
 
 	CTransform() {}
 	CTransform(const Vec2& p, const Vec2& v, float a) 
 		: pos(p), prevPos(p), velocity(v), angle(a) {}
+	CTransform(const Vec2& p, const Vec2& v, float a, const Vec2& s)
+		: pos(p), prevPos(p), velocity(v), angle(a), size(s) {}
 };
 
 class CBoundingBox : public Component {

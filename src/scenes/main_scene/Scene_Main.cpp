@@ -23,11 +23,7 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::Escape, "PAUSE");
 	registerAction(sf::Keyboard::O, "FIGHT");
 
-	spawnEntity(Vec2(160, 300), Vec2(100, 300), "enemy");
-	spawnEntity(Vec2(160, 300), Vec2(300, 100), "enemy");
-	spawnEntity(Vec2(500, 100), Vec2(90, 130), "door");
-	spawnEntity(Vec2(620, 150), Vec2(60, 60), "sign1");
-	spawnEntity(Vec2(770, 150), Vec2(60, 60), "sign2");
+	loadMap("assets/main.map");
 	
 	spawnPlayer();
 	m_camera = sf::View(
@@ -38,8 +34,11 @@ void Scene_Main::init() {
 	m_game->setDebugMode(true);
 }
 
-void Scene_Main::update() {
+void Scene_Main::loadMap(const std::string& path) {
+	m_game->loadGameMap(path, m_entities);
+}
 
+void Scene_Main::update() {
 	m_entities.update();
 	sMovement();
 	sCollision();
@@ -75,12 +74,10 @@ void Scene_Main::sRender() {
 		if (e->getTag() == "player") {
 			renderPlayer(e);
 		}
-		if (e->getTag() == "door") {
-			renderDoor(e);
+		else {
+			renderEntity(e);
 		}
-		if (e->getTag() == "sign1" || e->getTag() == "sign2") {
-			renderSign(e);
-		}
+
 		if (m_game->isDebugMode()) {
 			renderBoundingBox(e);
 		}
@@ -102,7 +99,7 @@ void Scene_Main::sRender() {
 void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 	auto& playerInput = m_player->getComponent<CInput>();
 	auto& graphicsComponent = m_player->getComponent<CGraphics>();
-
+	
 	sf::RectangleShape playerRect(sf::Vector2f(80, 80));
 	if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
 
@@ -116,26 +113,24 @@ void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 		playerRect.setTexture(&m_game->getAssets().getTexture(m_player->getComponent<CGraphics>().texture));
 	}
 
-	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(playerRect.getSize().x, playerRect.getSize().y);
+	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
 	playerRect.setPosition(pos.x, pos.y);
 	// Maybe draw the sprite without the playerRect
 	m_game->getWindow().draw(playerRect);
 }
 
-void Scene_Main::renderDoor(const std::shared_ptr<Entity>& e) {
-	sf::RectangleShape door(sf::Vector2f(90.0f, 130.0f));
-	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(door.getSize().x, door.getSize().y);
-	door.setPosition(pos.x, pos.y);
-	door.setTexture(&m_game->getAssets().getTexture("door"));
-	m_game->getWindow().draw(door);
-}
+void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
+	auto& transform = e->getComponent<CTransform>();
 
-void Scene_Main::renderSign(const std::shared_ptr<Entity>& e) {
-	sf::RectangleShape sign(sf::Vector2f(60, 60));
-	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos(sign.getSize().x, sign.getSize().y);
-	sign.setPosition(pos.x, pos.y);
-	sign.setTexture(&m_game->getAssets().getTexture("sign"));
-	m_game->getWindow().draw(sign);
+	sf::RectangleShape rect(sf::Vector2f(transform.size.x, transform.size.y));
+	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
+	rect.setPosition(pos.x, pos.y);
+
+	if (e->hasComponent<CGraphics>()) {
+		rect.setTexture(&m_game->getAssets().getTexture(e->getComponent<CGraphics>().texture));
+	}
+
+	m_game->getWindow().draw(rect);
 }
 
 void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& e) {
@@ -177,44 +172,51 @@ void Scene_Main::sCollision() {
 
 	for (auto& e : m_entities.getEntities()) {
 
-		if (e->getTag() == "enemy" || e->getTag() == "sign1" || e->getTag() == "sign2") {
+		if (e->getTag() == "player") {
+			continue;
+		}
 
-			auto& enemyTransform = e->getComponent<CTransform>();
+		if (e->getTag() == "door") {
+			auto& door = m_entities.getEntities("door")[0];
+			Vec2 doorCollision = Physics::getOverlap(m_player, door);
+			if (doorCollision.x > 0 && doorCollision.y > 0) {
+				m_player->getComponent<CTransform>().setPosition(500.0f, 500.0f);
+				cameraToPlayer();
+			}
+			continue;
+		}
 
-			Vec2 overlap = Physics::getOverlap(m_player, e);
-			Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, e);
+		if (!e->hasComponent<CBoundingBox>()) {
+			continue;
+		}
 
-			if (overlap.x > 0 && overlap.y > 0) {
+		auto& enemyTransform = e->getComponent<CTransform>();
 
-				bool vertically = lastOverlap.x > 0;
-				bool horizontally = lastOverlap.y > 0;
-				// came right
-				if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
-					playerTransform.setX(playerTransform.getPos().x + overlap.x);
-				}
-				// came left
-				else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
-					playerTransform.setX(playerTransform.getPos().x - overlap.x);
-				}
-				// came top
-				else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
-					playerTransform.setY(playerTransform.getPos().y - overlap.y);
-				}
-				//came bottom
-				else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
-					playerTransform.setY(playerTransform.getPos().y + overlap.y);
-				}
+		Vec2 overlap = Physics::getOverlap(m_player, e);
+		Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, e);
+
+		if (overlap.x > 0 && overlap.y > 0) {
+
+			bool vertically = lastOverlap.x > 0;
+			bool horizontally = lastOverlap.y > 0;
+			// came right
+			if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
+				playerTransform.setX(playerTransform.getPos().x + overlap.x);
+			}
+			// came left
+			else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
+				playerTransform.setX(playerTransform.getPos().x - overlap.x);
+			}
+			// came top
+			else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
+				playerTransform.setY(playerTransform.getPos().y - overlap.y);
+			}
+			//came bottom
+			else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
+				playerTransform.setY(playerTransform.getPos().y + overlap.y);
 			}
 		}
 	}
-
-	auto& door = m_entities.getEntities("door")[0];
-	Vec2 doorCollision = Physics::getOverlap(m_player, door);
-	if (doorCollision.x > 0 && doorCollision.y > 0) {
-		m_player->getComponent<CTransform>().setPosition(500.0f, 500.0f);
-		cameraToPlayer();
-	}
-
 }
 
 void Scene_Main::sMovement() {
@@ -412,7 +414,7 @@ void Scene_Main::spawnPlayer() {
 	float mid_x = m_game->getWindow().getSize().x / 2.0f;
 	float mid_y = m_game->getWindow().getSize().y / 2.0f;
 
-	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f);
+	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f, Vec2(80.0, 80.0));
 	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
 	entity->addComponent<CGraphics>("player");
@@ -425,12 +427,6 @@ void Scene_Main::spawnPlayer() {
 	stats.addAttack("Lightning", 10, CStats::LIGHTNING);
 
 	m_player = entity;
-}
-
-void Scene_Main::spawnEntity(const Vec2& pos, const Vec2& boundingBox, const std::string& name) {
-	auto e = m_entities.addEntity(name);
-	e->addComponent<CTransform>(pos, Vec2(0, 0), 0);
-	e->addComponent<CBoundingBox>(boundingBox);
 }
 
 void Scene_Main::onEnd() {
