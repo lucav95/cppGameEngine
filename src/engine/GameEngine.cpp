@@ -71,41 +71,44 @@ void GameEngine::loadDialog(const std::string& dialogPath) {
 	fin.close();
 }
 
-// shape ; entity name ; texture name (0 if null) ; Xposition ; Yposition ; width ; height ; 
-// BoundingBox width ; BoundingBox height ; BoundingBox relative X ; BoundingBox relative Y
+// Read the ".map-Files" section in assets/docu.md
 void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& entities) {
 	std::fstream fin(gameMapPath);
 
-	// vielleicht array
 	std::string shape;
-	std::string name;
-	std::string txtName;
-	std::string xPos;
-	std::string yPos;
-	std::string w;
-	std::string h;
-	std::string bbw;
-	std::string bbh;
-	std::string bbrpX;
-	std::string bbrpY;
+	std::string tokens[12];
 	
 	while (fin >> shape) {
 		if (shape == "RECT") {
-			fin >> name >> txtName >> xPos >> yPos >> w >> h >> bbw >> bbh >> bbrpX >> bbrpY;
-			auto e = entities.addEntity(name);
 			
-			if (txtName != "0") {
-				e->addComponent<CGraphics>(txtName);
+			const int max_size = 12;
+			int idx = 0;
+			while (fin >> tokens[idx] && idx < max_size - 1) {
+				idx++;
 			}
-			e->addComponent<CTransform>(
-				Vec2(std::stof(xPos), std::stof(yPos)),
-				Vec2(0.0, 0.0),
-				0,
-				Vec2(std::stof(w), std::stof(h)));
-			if (std::stof(bbw) > 0 && std::stof(bbh) > 0) {
-				e->addComponent<CBoundingBox>(
-					Vec2(std::stof(bbw), std::stof(bbh)),
-					Vec2(std::stof(bbrpX), std::stof(bbrpY)));
+
+			float w = std::stof(tokens[4]);
+			float h = std::stof(tokens[5]);
+			
+			for (int x = 0; x < std::stoi(tokens[10]); x++) {
+				for (int y = 0; y < std::stoi(tokens[11]); y++) {
+
+					auto e = entities.addEntity(tokens[0]);
+
+					if (tokens[1] != "0") {
+						e->addComponent<CGraphics>(tokens[1]);
+					}
+					e->addComponent<CTransform>(
+						Vec2(std::stof(tokens[2]) + (x * w), std::stof(tokens[3]) + (y * h)),
+						Vec2(0.0, 0.0),
+						0,
+						Vec2(w, h));
+					if (std::stof(tokens[6]) > 0 && std::stof(tokens[7]) > 0) {
+						e->addComponent<CBoundingBox>(
+							Vec2(std::stof(tokens[6]), std::stof(tokens[7])),
+							Vec2(std::stof(tokens[8]), std::stof(tokens[9])));
+					}
+				}
 			}
 		}
 	}
