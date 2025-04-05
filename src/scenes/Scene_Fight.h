@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "../engine/MenuSystem.h"
+#include "../systems/InventorySystem.h"
 
 class Scene_Fight : public Scene {
 
@@ -27,14 +28,15 @@ class Scene_Fight : public Scene {
 		int currentEnemyHp = 0;
 	} m_infoAnimation;
 	
-	sf::Shader					m_shader;
-
-	std::shared_ptr<Entity>		m_player;
-	std::shared_ptr<Entity>		m_enemy;
-	std::shared_ptr<Entity>		m_attack;
-	Vec2						m_viewPosition;
-	MenuSystem					m_menu;
-	bool						m_attackAnimationRunning = false;
+	sf::Shader							m_shader;
+	
+	std::shared_ptr<Entity>				m_player;
+	std::shared_ptr<Entity>				m_enemy;
+	std::shared_ptr<Entity>				m_attack;
+	std::shared_ptr<InventorySystem>	m_inventorySys;
+	Vec2								m_viewPosition;
+	MenuSystem							m_menu;
+	bool								m_attackAnimationRunning = false;
 
 	void						onEnd() override;
 	void						init();
@@ -52,7 +54,10 @@ class Scene_Fight : public Scene {
 	void						renderHpBar(float hp, float maxHp, const Vec2& pos);
 
 public:
-	Scene_Fight(GameEngine* game, std::shared_ptr<Entity>& player);
+	Scene_Fight(
+		GameEngine* game, 
+		std::shared_ptr<Entity>& player, 
+		std::shared_ptr<InventorySystem>& inventorySys);
 
 	void						update() override;
 	void						sRender() override;

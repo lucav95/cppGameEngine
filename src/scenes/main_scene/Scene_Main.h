@@ -1,21 +1,23 @@
 #pragma once
 
 #include "../Scene.h"
-#include "TextBoxSystem.h"
+#include "../../systems/TextBoxSystem.h"
+#include "../../systems/InventorySystem.h"
 
 class Scene_Main : public Scene {
 
-	Vec2					m_playerBox = Vec2(0.0f, 0.0f);
-	Vec2					m_enemyBox = Vec2(0.0f, 0.0f);
-	TextBoxSystem			m_textBoxSys = nullptr;
+	Vec2								m_playerBox = Vec2(0.0f, 0.0f);
+	Vec2								m_enemyBox = Vec2(0.0f, 0.0f);
+	TextBoxSystem						m_textBoxSys = nullptr;
+	std::shared_ptr<InventorySystem>	m_inventorySys;
 	// bessere lösung finden
-	int						m_transitionOpacity = 0;
-	bool					m_sceneChanged = false;
-	bool					m_fight = false;
+	int									m_transitionOpacity = 0;
+	bool								m_sceneChanged = false;
+	bool								m_fight = false;
 
-	sf::View				m_camera;
+	sf::View							m_camera;
 
-	std::shared_ptr<Entity> m_player;
+	std::shared_ptr<Entity>				m_player;
 
 
 	void					init();

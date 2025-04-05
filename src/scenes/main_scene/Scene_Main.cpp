@@ -57,7 +57,7 @@ void Scene_Main::fight() {
 	m_sceneChanged = false;
 	m_player->getComponent<CState>().setCustomState("ready");
 	m_fight = false;
-	m_game->changeScene("fight", std::make_shared<Scene_Fight>(m_game, m_player));
+	m_game->changeScene("fight", std::make_shared<Scene_Fight>(m_game, m_player, m_inventorySys));
 }
 
 void Scene_Main::sRender() {

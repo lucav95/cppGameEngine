@@ -3,8 +3,12 @@
 #include "../engine/Physics.h"
 #include <iostream>
 
-Scene_Fight::Scene_Fight(GameEngine* game, std::shared_ptr<Entity>& player) : Scene(game) {
+Scene_Fight::Scene_Fight(
+	GameEngine* game, 
+	std::shared_ptr<Entity>& player,
+	std::shared_ptr<InventorySystem>& inventorySys) : Scene(game) {
 	m_player = player;
+	m_inventorySys = inventorySys;
 	init();
 }
 

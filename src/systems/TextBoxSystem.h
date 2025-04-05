@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../../engine/GameEngine.h"
+#include "../engine/GameEngine.h"
 
 class TextBoxSystem {
 	bool						m_dialogArrowShowing = false;
