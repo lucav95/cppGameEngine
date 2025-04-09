@@ -13,6 +13,10 @@ Scene_Main::Scene_Main(GameEngine* game)
 
 void Scene_Main::init() {
 	m_textBoxSys = TextBoxSystem(m_game);
+	m_inventorySys = std::make_shared<InventorySystem>();
+
+	m_inventorySys->addItem("Health Potion", 3);
+	m_inventorySys->addItem("Mana Potion", 3);
 
 	registerAction(sf::Keyboard::W, "UP");
 	registerAction(sf::Keyboard::A, "LEFT");
@@ -317,7 +321,7 @@ void Scene_Main::sDoAction(const Action& action) {
 	handlePlayerMovement(action, playerInput);
 
 	if (action.getName() == "PAUSE" && action.getType() == Action::START) {
-		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game));
+		m_game->changeScene("pause", std::make_shared<Scene_Pause>(m_game, m_inventorySys));
 	}
 
 	if (action.getName() == "FIGHT" && action.getType() == Action::START) {

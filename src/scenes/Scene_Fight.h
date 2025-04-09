@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Scene.h"
-#include "../engine/MenuSystem.h"
+#include "../systems/menu_system/MenuSystem.h"
 #include "../systems/InventorySystem.h"
 
 class Scene_Fight : public Scene {
@@ -23,7 +23,7 @@ class Scene_Fight : public Scene {
 		bool running = false;
 		int framesUntilEnd = 0;
 		std::string text = "";
-		// um die hp vorm angriff zu speichern
+		// save hp before attack
 		int currentPlayerHp = 0;
 		int currentEnemyHp = 0;
 	} m_infoAnimation;
@@ -35,7 +35,7 @@ class Scene_Fight : public Scene {
 	std::shared_ptr<Entity>				m_attack;
 	std::shared_ptr<InventorySystem>	m_inventorySys;
 	Vec2								m_viewPosition;
-	MenuSystem							m_menu;
+	MenuSystem<std::string>				m_menu;
 	bool								m_attackAnimationRunning = false;
 
 	void						onEnd() override;

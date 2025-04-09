@@ -21,7 +21,7 @@ const InventorySystem::Item& InventorySystem::getItem(const std::string& name) c
 }
 
 void InventorySystem::addItem(const std::string& name, int amount) {
-	const Item& registerItem = getItemFromRegister(name);
+	Item registerItem = getItemFromRegister(name);
 	if (registerItem.name == "NULL") return;
 	
 	for (Item& i : m_items) {
@@ -30,6 +30,7 @@ void InventorySystem::addItem(const std::string& name, int amount) {
 			return;
 		}
 	}
+	registerItem.count = amount;
 	m_items.push_back(registerItem);
 }
 

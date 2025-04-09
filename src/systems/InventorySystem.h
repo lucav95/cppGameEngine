@@ -24,8 +24,8 @@ private:
 	
 	std::vector<Item>		m_items;
 	const std::vector<Item> m_itemRegister {
-		{ "health-potion", 1 },
-		{ "mana-potion", 1}
+		{ "Health Potion", 1 },
+		{ "Mana Potion", 1}
 	};
 
 	const Item&					getItemFromRegister(const std::string& name) const;

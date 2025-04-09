@@ -29,7 +29,7 @@ void Scene_Fight::init() {
 		attacks.push_back(attack.name);
 	}
 
-	m_menu = MenuSystem(
+	m_menu = MenuSystem<std::string>(
 		m_game, 
 		Vec2(m_viewPosition.x + 800, m_viewPosition.y + 500), 
 		attacks, 
