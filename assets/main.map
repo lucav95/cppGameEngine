@@ -1,6 +1,6 @@
-RECT grass grass_tile 100 50 80 80 0 0 0 0 15 10
-RECT enemy 0 160 300 0 0 100 300 0 0 1 1
-RECT enemy 0 160 300 0 0 300 100 0 0 1 1
-RECT door door 500 100 90 130 90 130 0 0 1 1
-RECT sign1 sign 620 150 60 60 60 60 0 0 1 1
-RECT sign2 sign 770 150 60 60 60 60 0 0 1 1
+RECT grass grass_tile 100 50 250 150 0 0 0 0 4.5 4.5 1
+RECT enemy 0 160 300 0 0 100 300 0 0 1 1 0
+RECT enemy 0 160 300 0 0 300 100 0 0 1 1 0
+RECT door door 500 100 90 130 90 130 0 0 1 1 0
+RECT sign1 sign 620 150 60 60 60 60 0 0 1 1 0
+RECT sign2 sign 770 150 60 60 60 60 0 0 1 1 0

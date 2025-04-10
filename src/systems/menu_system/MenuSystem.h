@@ -83,4 +83,8 @@ public:
 	int	getIndex() {
 		return m_index;
 	}
+
+	T getCurrentPoint() {
+		return m_menuPoints[m_index];
+	}
 };

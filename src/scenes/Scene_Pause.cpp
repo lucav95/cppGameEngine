@@ -46,6 +46,7 @@ void Scene_Pause::update() {
 void Scene_Pause::sRender() {
 	m_game->getWindow().clear();
 
+	// save current menu type with polymorphism ?
 	if (m_currentMenu == MenuType::TOP) m_topMenu->render();
 	if (m_currentMenu == MenuType::ITEMS) m_inventoryMenu->render();
 	
@@ -70,7 +71,7 @@ void Scene_Pause::sDoAction(const Action& action) {
 			switch (m_topMenu->getIndex()) {
 			case TopMenuPoints::INVENTORY: m_currentMenu = MenuType::ITEMS; break;
 			case TopMenuPoints::SAVE: break;
-			case TopMenuPoints::QUIT: break;
+			case TopMenuPoints::QUIT: m_game->quit(); break;
 			}
 		}
 	}

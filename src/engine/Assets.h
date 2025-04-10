@@ -18,7 +18,7 @@ class Assets {
 	FontMap					m_fonts;
 
 public:
-	void					addTexture(const std::string& name, const std::string& path);
+	void					addTexture(const std::string& name, const std::string& path, bool repeated);
 	void					addAnimation(const std::string& name, const Animation& animation);
 	void					addSound(const std::string& name, const std::string& path);
 	void					addFont(const std::string& name, const std::string& path);

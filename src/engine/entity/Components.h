@@ -36,6 +36,11 @@ public:
 		pos.y = y;
 	}
 
+	void setScale(float x, float y) {
+		scale.x = x;
+		scale.y = y;
+	}
+
 	Vec2& getPos() { return pos; }
 	Vec2& getPrevPos() { return prevPos; }
 
@@ -93,6 +98,7 @@ class CGraphics : public Component {
 public:
 	Animation animation;
 	std::string texture;
+	bool repeated = false;
 	CGraphics() {}
 	CGraphics(const std::string& texture) : texture(texture) {}
 	CGraphics(Animation& animation) : animation(animation) {}

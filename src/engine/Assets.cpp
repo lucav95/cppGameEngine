@@ -1,13 +1,14 @@
 #include "Assets.h"
 #include <iostream>
 
-void Assets::addTexture(const std::string& name, const std::string& path) {
+void Assets::addTexture(const std::string& name, const std::string& path, bool repeated) {
 	sf::Texture texture;
 	if (!texture.loadFromFile(path)) {
 		std::cout << "Could not load texture: " << path << "\n";
 		return;
 	}
 	std::cout << "Texture loaded: " << path << "\n";
+	texture.setRepeated(repeated);
 	m_textures[name] = texture;
 }
 

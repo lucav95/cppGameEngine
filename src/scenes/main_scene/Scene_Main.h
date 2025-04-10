@@ -10,8 +10,9 @@ class Scene_Main : public Scene {
 	Vec2								m_enemyBox = Vec2(0.0f, 0.0f);
 	TextBoxSystem						m_textBoxSys = nullptr;
 	std::shared_ptr<InventorySystem>	m_inventorySys;
-	// bessere lösung finden
+
 	int									m_transitionOpacity = 0;
+
 	bool								m_sceneChanged = false;
 	bool								m_fight = false;
 
@@ -31,7 +32,7 @@ class Scene_Main : public Scene {
 
 	void					renderPlayer(const std::shared_ptr<Entity>& e);
 	void					renderBoundingBox(const std::shared_ptr<Entity>& e);
-	void					renderTransition(const Vec2& viewPosition);
+	void					renderTransitionAnimation(bool fadeOut); // fadeOut if animation is fading out or in
 	void					fight();
 
 	void					cameraToPlayer();

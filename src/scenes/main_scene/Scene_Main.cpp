@@ -92,9 +92,10 @@ void Scene_Main::sRender() {
 	}
 	if (m_sceneChanged) {
 		auto windowSize = m_game->getWindow().getSize();
-		renderTransition(Physics::getViewPosition(
-			m_game->getWindow().getView(), 
-			Vec2(windowSize.x, windowSize.y)));
+		renderTransitionAnimation(true);
+		if (m_transitionOpacity >= 255) {
+			m_fight = true;
+		}
 	}
 
 	m_game->getWindow().display();
@@ -125,10 +126,21 @@ void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 
 void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
 	auto& transform = e->getComponent<CTransform>();
+	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
+
+	if (e->hasComponent<CGraphics>() && e->getComponent<CGraphics>().repeated) {
+		sf::Sprite sprite(m_game->getAssets().getTexture(e->getComponent<CGraphics>().texture));
+		sprite.setTextureRect(sf::IntRect(0, 0, transform.size.x, transform.size.y));
+		sprite.setPosition(pos.x, pos.y);
+		sprite.setScale(sf::Vector2f(transform.scale.x, transform.scale.y));
+
+		m_game->getWindow().draw(sprite);
+		return;
+	}
 
 	sf::RectangleShape rect(sf::Vector2f(transform.size.x, transform.size.y));
-	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
 	rect.setPosition(pos.x, pos.y);
+	rect.setScale(sf::Vector2f(transform.scale.x, transform.scale.y));
 
 	if (e->hasComponent<CGraphics>()) {
 		rect.setTexture(&m_game->getAssets().getTexture(e->getComponent<CGraphics>().texture));
@@ -155,20 +167,21 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& e) {
 	m_game->getWindow().draw(point);
 }
 
-void Scene_Main::renderTransition(const Vec2& viewPosition) {
-	if (m_transitionOpacity >= 255) {
-		m_transitionOpacity = 255;
-		m_fight = true;
-	}
-	
+void Scene_Main::renderTransitionAnimation(bool fadeOut) {
 	sf::Vector2u WINDOW_SIZE = m_game->getWindow().getSize();
+	auto& VIEW_POSITION = Physics::getViewPosition(m_game->getWindow().getView(),Vec2(WINDOW_SIZE.x, WINDOW_SIZE.y));
 
 	sf::RectangleShape transition(sf::Vector2f(WINDOW_SIZE.x, WINDOW_SIZE.y));
-	transition.setPosition(viewPosition.x, viewPosition.y);
+	transition.setPosition(VIEW_POSITION.x, VIEW_POSITION.y);
 	transition.setFillColor(sf::Color(0, 0, 0, m_transitionOpacity));
 	m_game->getWindow().draw(transition);
 
-	m_transitionOpacity += 8;
+	if (fadeOut) {
+		m_transitionOpacity = m_transitionOpacity >= 255 ? 255 : m_transitionOpacity + 8;
+	}
+	else {
+		m_transitionOpacity = m_transitionOpacity <= 0 ? 0 : m_transitionOpacity - 8;
+	}
 }
 
 void Scene_Main::sCollision() {
@@ -380,6 +393,7 @@ void Scene_Main::handlePlayerMovement(const Action& action, CInput& playerInput)
 	}
 }
 
+// AUGENKREBS
 // if multiple directions were pressed, the animation would be stuck on the last released direction
 void Scene_Main::correctAnimationDirections(bool up, bool down, bool left, bool right) {
 	auto& playerInput = m_player->getComponent<CInput>();

@@ -28,18 +28,19 @@ void GameEngine::loadAssets(const std::string& configPath) {
 	std::string header;
 	std::string name;
 	std::string path;
+	std::string repeated;
 	std::string aniFrameCount;
 	std::string aniSpeed;
 	Animation animation;
 
 	while (fin >> header) {
 		if (header == "TEX") {
-			fin >> path >> name;
-			m_assets.addTexture(name, path);
+			fin >> path >> name >> repeated;
+			m_assets.addTexture(name, path, std::stoi(repeated));
 		}
 		if (header == "ANI") {
 			fin >> path >> name >> aniFrameCount >> aniSpeed;
-			m_assets.addTexture(name, path);
+			m_assets.addTexture(name, path, false); // maybe add repeated animation
 			animation = Animation(name, m_assets.getTexture(name), std::stoi(aniFrameCount), std::stoi(aniSpeed));
 			m_assets.addAnimation(name, animation);
 		}
@@ -75,40 +76,38 @@ void GameEngine::loadDialog(const std::string& dialogPath) {
 void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& entities) {
 	std::fstream fin(gameMapPath);
 
+	const int TOKEN_SIZE = 13;
+
 	std::string shape;
-	std::string tokens[12];
+	std::string tokens[TOKEN_SIZE];
 	
 	while (fin >> shape) {
 		if (shape == "RECT") {
 			
-			const int max_size = 12;
 			int idx = 0;
-			while (fin >> tokens[idx] && idx < max_size - 1) {
+			while (fin >> tokens[idx] && idx < TOKEN_SIZE - 1) {
 				idx++;
 			}
 
 			float w = std::stof(tokens[4]);
 			float h = std::stof(tokens[5]);
-			
-			for (int x = 0; x < std::stoi(tokens[10]); x++) {
-				for (int y = 0; y < std::stoi(tokens[11]); y++) {
 
-					auto e = entities.addEntity(tokens[0]);
+			auto e = entities.addEntity(tokens[0]);
 
-					if (tokens[1] != "0") {
-						e->addComponent<CGraphics>(tokens[1]);
-					}
-					e->addComponent<CTransform>(
-						Vec2(std::stof(tokens[2]) + (x * w), std::stof(tokens[3]) + (y * h)),
-						Vec2(0.0, 0.0),
-						0,
-						Vec2(w, h));
-					if (std::stof(tokens[6]) > 0 && std::stof(tokens[7]) > 0) {
-						e->addComponent<CBoundingBox>(
-							Vec2(std::stof(tokens[6]), std::stof(tokens[7])),
-							Vec2(std::stof(tokens[8]), std::stof(tokens[9])));
-					}
-				}
+			if (tokens[1] != "0") {
+				auto& graphics = e->addComponent<CGraphics>(tokens[1]);
+				graphics.repeated = std::stoi(tokens[12]);
+			}
+			auto& transform = e->addComponent<CTransform>(
+				Vec2(std::stof(tokens[2]), std::stof(tokens[3])),
+				Vec2(0.0, 0.0),
+				0,
+				Vec2(w, h));
+			transform.setScale(std::stof(tokens[10]), std::stof(tokens[11]));
+			if (std::stof(tokens[6]) > 0 && std::stof(tokens[7]) > 0) {
+				e->addComponent<CBoundingBox>(
+					Vec2(std::stof(tokens[6]), std::stof(tokens[7])),
+					Vec2(std::stof(tokens[8]), std::stof(tokens[9])));
 			}
 		}
 	}

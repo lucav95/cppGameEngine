@@ -11,5 +11,6 @@ Used to load entities at given locations
 - 7: Bounding Box height
 - 8: Bounding Box relative X
 - 9: Bounding Box relative Y
-- 10: X amount in the matrix
-- 11: Y amount in the matrix
+- 10: X Scale
+- 11: Y Scale
+- 12: 1/0 if the texture should be repeated
