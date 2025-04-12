@@ -1,0 +1,146 @@
+{
+  "player": {
+    "type": "TEX",
+    "name": "player",
+    "path": "assets/textures/player1.png",
+    "repeated": false
+  },
+  "player_left": {
+    "type": "TEX",
+    "name": "player_left",
+    "path": "assets/textures/player1_left.png",
+    "repeated": false
+  },
+  "player_right": {
+    "type": "TEX",
+    "name": "player_right",
+    "path": "assets/textures/player1_right.png",
+    "repeated": false
+  },
+  "player_up": {
+    "type": "TEX",
+    "name": "player_up",
+    "path": "assets/textures/player1_up.png",
+    "repeated": false
+  },
+  "door": {
+    "type": "TEX",
+    "name": "door",
+    "path": "assets/textures/door.png",
+    "repeated": false
+  },
+  "sign": {
+    "type": "TEX",
+    "name": "sign",
+    "path": "assets/textures/sign.png",
+    "repeated": false
+  },
+  "text_arrow": {
+    "type": "TEX",
+    "name": "text_arrow",
+    "path": "assets/textures/text_arrow.png",
+    "repeated": false
+  },
+  "menu_cursor": {
+    "type": "TEX",
+    "name": "menu_cursor",
+    "path": "assets/textures/menu_cursor.png",
+    "repeated": false
+  },
+  "tree_enemy": {
+    "type": "TEX",
+    "name": "tree_enemy",
+    "path": "assets/textures/tree_enemy.png",
+    "repeated": false
+  },
+  "water_enemy": {
+    "type": "TEX",
+    "name": "water_enemy",
+    "path": "assets/textures/water_enemy.png",
+    "repeated": false
+  },
+  "fire_enemy": {
+    "type": "TEX",
+    "name": "fire_enemy",
+    "path": "assets/textures/fire_enemy.png",
+    "repeated": false
+  },
+  "stone_tile": {
+    "type": "TEX",
+    "name": "stone_tile",
+    "path": "assets/textures/stone_tile.png",
+    "repeated": true
+  },
+  "player_animation": {
+    "type": "ANI",
+    "name": "player_animation",
+    "path": "assets/textures/player_animation.png",
+    "frameCount": 4,
+    "speed": 5
+  },
+  "player_animation_left": {
+    "type": "ANI",
+    "name": "player_animation_left",
+    "path": "assets/textures/player_animation_left.png",
+    "frameCount": 4,
+    "speed": 5
+  },
+  "player_animation_up": {
+    "type": "ANI",
+    "name": "player_animation_up",
+    "path": "assets/textures/player_animation_up.png",
+    "frameCount": 4,
+    "speed": 5
+  },
+  "player_animation_right": {
+    "type": "ANI",
+    "name": "player_animation_right",
+    "path": "assets/textures/player_animation_right.png",
+    "frameCount": 4,
+    "speed": 5
+  },
+  "fire_animation": {
+    "type": "ANI",
+    "name": "fire_animation",
+    "path": "assets/textures/fire_animation.png",
+    "frameCount": 3,
+    "speed": 20
+  },
+  "ice_animation": {
+    "type": "ANI",
+    "name": "ice_animation",
+    "path": "assets/textures/ice_animation.png",
+    "frameCount": 3,
+    "speed": 20
+  },
+  "poison_animation": {
+    "type": "ANI",
+    "name": "poison_animation",
+    "path": "assets/textures/poison_animation.png",
+    "frameCount": 3,
+    "speed": 20
+  },
+  "lightning_animation": {
+    "type": "ANI",
+    "name": "lightning_animation",
+    "path": "assets/textures/poison_animation.png",
+    "frameCount": 4,
+    "speed": 5
+  },
+  "pixelmix": {
+    "type": "FON",
+    "name": "pixelmix",
+    "path": "assets/fonts/pixelmix.ttf"
+  },
+  "poisoned": {
+    "type": "SHA",
+    "name": "poisoned",
+    "path": "assets/shaders/shader_poisoned.frag"
+  },
+  "stone_tilemap": {
+    "type": "TEX",
+    "name": "stone_tilemap",
+    "path": "assets/textures/stone_tilemap.png",
+    "repeated": false
+  }
+}

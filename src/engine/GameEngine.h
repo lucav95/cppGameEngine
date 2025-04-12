@@ -29,7 +29,7 @@ public:
 		const std::string& configPath, 
 		const std::string& dialogPath);
 
-	std::string				shader;
+	std::string				m_shader;
 
 	void					loadGameMap(const std::string& gameMapPath, EntityManager& entities);
 	void					changeScene(

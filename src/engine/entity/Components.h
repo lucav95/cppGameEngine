@@ -96,12 +96,25 @@ public:
 
 class CGraphics : public Component {
 public:
+	struct Tile {
+		// Relative to starting position because the transform scale can be changed
+		Vec2 worldPos = { 0.0, 0.0 };
+		Vec2 texturePos = { 0.0, 0.0 };
+		Vec2 size = { 0.0, 0.0 };
+	};
+	
 	Animation animation;
 	std::string texture;
+	std::vector<Tile> tiles;
 	bool repeated = false;
+	bool textureMap = false;
+
 	CGraphics() {}
-	CGraphics(const std::string& texture) : texture(texture) {}
+	CGraphics(const std::string& texture) : texture(texture) { }
 	CGraphics(Animation& animation) : animation(animation) {}
+	CGraphics(const std::string& texture, std::vector<Tile>& tiles) : texture(texture), tiles(tiles) {
+		textureMap = true;
+	}
 };
 
 class CState : public Component {

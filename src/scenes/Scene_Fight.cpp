@@ -41,7 +41,7 @@ void Scene_Fight::init() {
 	m_attack->addComponent<CTransform>().setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
 	m_attack->addComponent<CGraphics>();
 
-	m_shader.loadFromFile(m_game->shader, sf::Shader::Fragment);
+	m_shader.loadFromFile(m_game->m_shader, sf::Shader::Fragment);
 }
 
 void Scene_Fight::getEnemy() {

@@ -27,7 +27,7 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::Escape, "PAUSE");
 	registerAction(sf::Keyboard::O, "FIGHT");
 
-	loadMap("assets/main.map");
+	loadMap("assets/main_map.json");
 	
 	spawnPlayer();
 	m_camera = sf::View(
@@ -128,6 +128,21 @@ void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
 	auto& transform = e->getComponent<CTransform>();
 	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
 
+	// Draw tile maps
+	if (e->hasComponent<CGraphics>() && e->getComponent<CGraphics>().textureMap) {
+		auto& graphics = e->getComponent<CGraphics>();
+		sf::Sprite sprite(m_game->getAssets().getTexture(graphics.texture));
+		sprite.setScale(sf::Vector2f(transform.scale.x, transform.scale.y));
+		for (auto& tile : graphics.tiles) {
+			sprite.setTextureRect(sf::IntRect(tile.texturePos.x, tile.texturePos.y, tile.size.x, tile.size.y));
+			sprite.setPosition(tile.worldPos.x, tile.worldPos.y);
+			
+			m_game->getWindow().draw(sprite);
+		}
+		return;
+	}
+
+	// Draw repeated textures
 	if (e->hasComponent<CGraphics>() && e->getComponent<CGraphics>().repeated) {
 		sf::Sprite sprite(m_game->getAssets().getTexture(e->getComponent<CGraphics>().texture));
 		sprite.setTextureRect(sf::IntRect(0, 0, transform.size.x, transform.size.y));

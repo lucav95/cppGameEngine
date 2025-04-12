@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <json.hpp>
 
 GameEngine::GameEngine(
 				const std::string& configPath, 
@@ -24,35 +25,29 @@ void GameEngine::init(
 
 void GameEngine::loadAssets(const std::string& configPath) {
 	std::ifstream fin(configPath);
+	nlohmann::json json = nlohmann::json::parse(fin);
+	fin.close();
 
-	std::string header;
-	std::string name;
-	std::string path;
-	std::string repeated;
-	std::string aniFrameCount;
-	std::string aniSpeed;
-	Animation animation;
-
-	while (fin >> header) {
-		if (header == "TEX") {
-			fin >> path >> name >> repeated;
-			m_assets.addTexture(name, path, std::stoi(repeated));
+	for (auto& j : json) {
+		if (j["type"] == "TEX") {
+			m_assets.addTexture(j["name"], j["path"], j["repeated"].get<bool>());
 		}
-		if (header == "ANI") {
-			fin >> path >> name >> aniFrameCount >> aniSpeed;
-			m_assets.addTexture(name, path, false); // maybe add repeated animation
-			animation = Animation(name, m_assets.getTexture(name), std::stoi(aniFrameCount), std::stoi(aniSpeed));
-			m_assets.addAnimation(name, animation);
+		if (j["type"] == "ANI") {
+			m_assets.addTexture(j["name"], j["path"], false);
+			Animation animation = Animation(
+				j["name"], 
+				m_assets.getTexture(j["name"]), 
+				j["frameCount"].get<int>(), 
+				j["speed"].get<int>());
+			m_assets.addAnimation(j["name"], animation);
 		}
-		if (header == "FON") {
-			fin >> path >> name;
-			m_assets.addFont(name, path);
+		if (j["type"] == "FON") {
+			m_assets.addFont(j["name"], j["path"]);
 		}
-		if (header == "SHA") {
-			fin >> shader;
+		if (j["type"] == "SHA") {
+			m_shader = j["path"].get<std::string>();
 		}
 	}
-	fin.close();
 }
 
 void GameEngine::loadDialog(const std::string& dialogPath) {
@@ -72,43 +67,47 @@ void GameEngine::loadDialog(const std::string& dialogPath) {
 	fin.close();
 }
 
-// Read the ".map-Files" section in assets/docu.md
 void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& entities) {
 	std::fstream fin(gameMapPath);
+	nlohmann::json json = nlohmann::json::parse(fin);
+	fin.close();
 
-	const int TOKEN_SIZE = 13;
+	for (auto& j : json) {
+		if (j["type"] == "RECT") {
 
-	std::string shape;
-	std::string tokens[TOKEN_SIZE];
-	
-	while (fin >> shape) {
-		if (shape == "RECT") {
-			
-			int idx = 0;
-			while (fin >> tokens[idx] && idx < TOKEN_SIZE - 1) {
-				idx++;
-			}
+			auto e = entities.addEntity(j["name"]);
 
-			float w = std::stof(tokens[4]);
-			float h = std::stof(tokens[5]);
-
-			auto e = entities.addEntity(tokens[0]);
-
-			if (tokens[1] != "0") {
-				auto& graphics = e->addComponent<CGraphics>(tokens[1]);
-				graphics.repeated = std::stoi(tokens[12]);
+			if (j["texture"] != "none") {
+				auto& graphics = e->addComponent<CGraphics>(j["texture"]);
+				graphics.repeated = m_assets.getTexture(j["texture"]).isRepeated();
 			}
 			auto& transform = e->addComponent<CTransform>(
-				Vec2(std::stof(tokens[2]), std::stof(tokens[3])),
+				Vec2(j["worldPos"]["x"].get<float>(), j["worldPos"]["y"].get<float>()),
 				Vec2(0.0, 0.0),
 				0,
-				Vec2(w, h));
-			transform.setScale(std::stof(tokens[10]), std::stof(tokens[11]));
-			if (std::stof(tokens[6]) > 0 && std::stof(tokens[7]) > 0) {
+				Vec2(j["size"]["w"].get<float>(), j["size"]["h"].get<float>()));
+			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
+			if (j["boundingBox"]["w"].get<float>() > 0 && j["boundingBox"]["h"].get<float>() > 0) {
 				e->addComponent<CBoundingBox>(
-					Vec2(std::stof(tokens[6]), std::stof(tokens[7])),
-					Vec2(std::stof(tokens[8]), std::stof(tokens[9])));
+					Vec2(j["boundingBox"]["w"].get<float>(), j["boundingBox"]["h"].get<float>()),
+					Vec2(j["boundingBox"]["relativeX"].get<float>(), j["boundingBox"]["relativeY"].get<float>()));
 			}
+		}
+		if (j["type"] == "TEX_MAP") {
+
+			auto e = entities.addEntity(j["name"]);
+
+			std::vector<CGraphics::Tile> tiles;
+			CGraphics::Tile tile;
+			for (auto& t : j["tiles"]) {
+				tile.size = Vec2(t["size"]["w"].get<float>(), t["size"]["h"].get<float>());
+				tile.texturePos = Vec2(t["texturePos"]["x"].get<float>(), t["texturePos"]["y"].get<float>());
+				tile.worldPos = Vec2(t["worldPos"]["x"].get<float>(), t["worldPos"]["y"].get<float>());
+				tiles.push_back(tile);
+			}
+			auto& graphics = e->addComponent<CGraphics>(j["texture"], tiles);
+			auto& transform = e->addComponent<CTransform>();
+			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
 		}
 	}
 }
