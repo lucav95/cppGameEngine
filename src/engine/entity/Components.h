@@ -97,18 +97,19 @@ public:
 class CGraphics : public Component {
 public:
 	struct Tile {
-		// Relative to starting position because the transform scale can be changed
-		Vec2 worldPos = { 0.0, 0.0 };
+		// Position of the tile can only be detected by indexes because the scale of the entity can change
+		Vec2 posIndex = { 0.0, 0.0 };
 		Vec2 texturePos = { 0.0, 0.0 };
-		Vec2 size = { 0.0, 0.0 };
+		Vec2 textureSize = { 0.0, 0.0 };
 	};
+	std::vector<Tile> tiles;
+	Vec2 textureMapStartingPos = { 0.0, 0.0 };
+	bool textureMap = false;
 	
 	Animation animation;
 	std::string texture;
-	std::vector<Tile> tiles;
 	bool repeated = false;
-	bool textureMap = false;
-
+	
 	CGraphics() {}
 	CGraphics(const std::string& texture) : texture(texture) { }
 	CGraphics(Animation& animation) : animation(animation) {}

@@ -35,7 +35,9 @@ void Scene_Main::init() {
 		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
 	m_game->getWindow().setView(m_camera);
 
-	m_game->setDebugMode(true);
+	m_game->setDebugMode(false);
+
+	m_shader.loadFromFile(m_game->m_shader, sf::Shader::Fragment);
 }
 
 void Scene_Main::loadMap(const std::string& path) {
@@ -121,7 +123,9 @@ void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
 	playerRect.setPosition(pos.x, pos.y);
 	// Maybe draw the sprite without the playerRect
-	m_game->getWindow().draw(playerRect);
+	float time = m_clock.getElapsedTime().asSeconds();
+	m_shader.setUniform("u_time", time);
+	m_game->getWindow().draw(playerRect, &m_shader);
 }
 
 void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
@@ -134,9 +138,11 @@ void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
 		sf::Sprite sprite(m_game->getAssets().getTexture(graphics.texture));
 		sprite.setScale(sf::Vector2f(transform.scale.x, transform.scale.y));
 		for (auto& tile : graphics.tiles) {
-			sprite.setTextureRect(sf::IntRect(tile.texturePos.x, tile.texturePos.y, tile.size.x, tile.size.y));
-			sprite.setPosition(tile.worldPos.x, tile.worldPos.y);
-			
+			sprite.setTextureRect(sf::IntRect(tile.texturePos.x, tile.texturePos.y, tile.textureSize.x, tile.textureSize.y));
+			float xPos = graphics.textureMapStartingPos.x + (transform.scale.x * tile.textureSize.x * tile.posIndex.x);
+			float yPos = graphics.textureMapStartingPos.y + (transform.scale.y * tile.textureSize.y * tile.posIndex.y);
+			sprite.setPosition(xPos, yPos);
+
 			m_game->getWindow().draw(sprite);
 		}
 		return;
@@ -320,7 +326,6 @@ void Scene_Main::sDoAction(const Action& action) {
 	}
 
 	if (action.getName() == "DEBUG" && action.getType() == Action::START) {
-		std::cout << m_player->getComponent<CStats>().hp << "\n";
 		m_game->setDebugMode(!m_game->isDebugMode());
 	}
 

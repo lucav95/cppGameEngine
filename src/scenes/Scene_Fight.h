@@ -28,8 +28,6 @@ class Scene_Fight : public Scene {
 		int currentEnemyHp = 0;
 	} m_infoAnimation;
 	
-	sf::Shader							m_shader;
-	
 	std::shared_ptr<Entity>				m_player;
 	std::shared_ptr<Entity>				m_enemy;
 	std::shared_ptr<Entity>				m_attack;

@@ -141,13 +141,21 @@
     "type": "TEX_MAP",
     "name": "stone_tilemap",
     "texture": "stone_tilemap",
+    "textureMapStartingPos": {
+      "x": 400,
+      "y": 250
+    },
+    "scale": {
+      "w": 4,
+      "h": 4
+    },
     "tiles": [
       {
-        "worldPos": {
-          "x": 400,
-          "y": 250
+        "posIndex": {
+          "x": 0,
+          "y": 0
         },
-        "size": {
+        "textureSize": {
           "w": 30,
           "h": 30
         },
@@ -157,11 +165,11 @@
         }
       },
       {
-        "worldPos": {
-          "x": 400,
-          "y": 370
+        "posIndex": {
+          "x": 0,
+          "y": 1
         },
-        "size": {
+        "textureSize": {
           "w": 30,
           "h": 30
         },
@@ -171,11 +179,11 @@
         }
       },
       {
-        "worldPos": {
-          "x": 520,
-          "y": 250
+        "posIndex": {
+          "x": 1,
+          "y": 0
         },
-        "size": {
+        "textureSize": {
           "w": 30,
           "h": 30
         },
@@ -185,11 +193,11 @@
         }
       },
       {
-        "worldPos": {
-          "x": 520,
-          "y": 370
+        "posIndex": {
+          "x": 1,
+          "y": 1
         },
-        "size": {
+        "textureSize": {
           "w": 30,
           "h": 30
         },
@@ -198,10 +206,77 @@
           "y": 30
         }
       }
-    ],
+    ]
+  },
+  "grass_tilemap": {
+    "type": "TEX_MAP",
+    "name": "grass_tilemap",
+    "texture": "grass_tilemap",
+    "textureMapStartingPos": {
+      "x": 700,
+      "y": 250
+    },
     "scale": {
       "w": 4,
       "h": 4
-    }
+    },
+    "tiles": [
+      {
+        "posIndex": {
+          "x": 0,
+          "y": 0
+        },
+        "textureSize": {
+          "w": 30,
+          "h": 30
+        },
+        "texturePos": {
+          "x": 30,
+          "y": 90
+        }
+      },
+      {
+        "posIndex": {
+          "x": 1,
+          "y": 0
+        },
+        "textureSize": {
+          "w": 30,
+          "h": 30
+        },
+        "texturePos": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "posIndex": {
+          "x": 0,
+          "y": 1
+        },
+        "textureSize": {
+          "w": 30,
+          "h": 30
+        },
+        "texturePos": {
+          "x": 30,
+          "y": 30
+        }
+      },
+      {
+        "posIndex": {
+          "x": 1,
+          "y": 1
+        },
+        "textureSize": {
+          "w": 30,
+          "h": 30
+        },
+        "texturePos": {
+          "x": 60,
+          "y": 0
+        }
+      }
+    ]
   }
 }

@@ -71,6 +71,12 @@
     "path": "assets/textures/stone_tile.png",
     "repeated": true
   },
+  "girl_enemy": {
+    "type": "TEX",
+    "name": "girl_enemy",
+    "path": "assets/textures/girl.png",
+    "repeated": false
+  },
   "player_animation": {
     "type": "ANI",
     "name": "player_animation",
@@ -123,7 +129,7 @@
   "lightning_animation": {
     "type": "ANI",
     "name": "lightning_animation",
-    "path": "assets/textures/poison_animation.png",
+    "path": "assets/textures/lightning_animation.png",
     "frameCount": 4,
     "speed": 5
   },
@@ -141,6 +147,12 @@
     "type": "TEX",
     "name": "stone_tilemap",
     "path": "assets/textures/stone_tilemap.png",
+    "repeated": false
+  },
+  "grass_tilemap": {
+    "type": "TEX",
+    "name": "grass_tilemap",
+    "path": "assets/textures/grass_tilemap.png",
     "repeated": false
   }
 }

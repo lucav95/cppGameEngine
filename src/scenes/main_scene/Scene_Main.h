@@ -20,6 +20,8 @@ class Scene_Main : public Scene {
 
 	std::shared_ptr<Entity>				m_player;
 
+	sf::Shader							m_shader;
+	sf::Clock							m_clock;
 
 	void					init();
 

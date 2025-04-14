@@ -12,7 +12,7 @@ class Scene_Menu : public Scene {
 	MenuPoint				m_start;
 	
 	void					onEnd() override;
-
+	
 public:
 	Scene_Menu(GameEngine* game);
 

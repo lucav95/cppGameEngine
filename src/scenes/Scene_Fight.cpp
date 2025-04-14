@@ -40,12 +40,10 @@ void Scene_Fight::init() {
 	m_attack = m_entities.addEntity("attack");
 	m_attack->addComponent<CTransform>().setPosition(m_viewPosition.x + 850, m_viewPosition.y + 50);
 	m_attack->addComponent<CGraphics>();
-
-	m_shader.loadFromFile(m_game->m_shader, sf::Shader::Fragment);
 }
 
 void Scene_Fight::getEnemy() {
-	int random = (std::rand() % 3) + 1; // 1 - 3
+	int random = (std::rand() % 4) + 1; // 1 - 4
 	m_enemy = m_entities.addEntity("fight_enemy");
 
 	switch (random) {
@@ -60,6 +58,10 @@ void Scene_Fight::getEnemy() {
 		case 3:
 			m_enemy->addComponent<CGraphics>("water_enemy");
 			m_enemy->addComponent<CStats>(90, 90, CStats::LIGHTNING, CStats::FIRE);
+			break;
+		case 4:
+			m_enemy->addComponent<CGraphics>("girl_enemy");
+			m_enemy->addComponent<CStats>(70, 70, CStats::FIRE, CStats::ICE);
 			break;
 	}
 	m_enemy->addComponent<CState>(CState::NONE);
@@ -106,7 +108,6 @@ void Scene_Fight::renderPlayer() {
 	player.setTexture(&m_game->getAssets().getTexture("player_up"));
 	player.setPosition(m_viewPosition.x + 150, m_viewPosition.y + 400);
 	m_game->getWindow().draw(player);
-	//m_game->getWindow().draw(player, &m_shader);
 }
 
 void Scene_Fight::renderEnemy() {

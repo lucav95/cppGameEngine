@@ -100,12 +100,13 @@ void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& enti
 			std::vector<CGraphics::Tile> tiles;
 			CGraphics::Tile tile;
 			for (auto& t : j["tiles"]) {
-				tile.size = Vec2(t["size"]["w"].get<float>(), t["size"]["h"].get<float>());
+				tile.textureSize = Vec2(t["textureSize"]["w"].get<float>(), t["textureSize"]["h"].get<float>());
 				tile.texturePos = Vec2(t["texturePos"]["x"].get<float>(), t["texturePos"]["y"].get<float>());
-				tile.worldPos = Vec2(t["worldPos"]["x"].get<float>(), t["worldPos"]["y"].get<float>());
+				tile.posIndex = Vec2(t["posIndex"]["x"].get<float>(), t["posIndex"]["y"].get<float>());
 				tiles.push_back(tile);
 			}
 			auto& graphics = e->addComponent<CGraphics>(j["texture"], tiles);
+			graphics.textureMapStartingPos = Vec2(j["textureMapStartingPos"]["x"].get<float>(), j["textureMapStartingPos"]["y"].get<float>());
 			auto& transform = e->addComponent<CTransform>();
 			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
 		}
