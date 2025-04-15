@@ -154,5 +154,17 @@
     "name": "grass_tilemap",
     "path": "assets/textures/grass_tilemap.png",
     "repeated": false
+  },
+  "lantern": {
+    "type": "TEX",
+    "name": "lantern",
+    "path": "assets/textures/lantern.png",
+    "repeated": false
+  },
+  "brain_baby": {
+    "type": "TEX",
+    "name": "brain_baby",
+    "path": "assets/textures/brain_baby.png",
+    "repeated": false
   }
 }

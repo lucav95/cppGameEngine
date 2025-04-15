@@ -28,14 +28,15 @@ void Scene_Main::init() {
 	registerAction(sf::Keyboard::O, "FIGHT");
 
 	loadMap("assets/main_map.json");
-	
+
 	spawnPlayer();
+	
 	m_camera = sf::View(
 		sf::Vector2f(m_game->getWindow().getSize().x / 2, m_game->getWindow().getSize().y / 2), 
 		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
 	m_game->getWindow().setView(m_camera);
 
-	m_game->setDebugMode(false);
+	m_game->setDebugMode(true);
 
 	m_shader.loadFromFile(m_game->m_shader, sf::Shader::Fragment);
 }
@@ -46,6 +47,7 @@ void Scene_Main::loadMap(const std::string& path) {
 
 void Scene_Main::update() {
 	m_entities.update();
+	updateZIndexes();
 	sMovement();
 	sCollision();
 	sRender();
@@ -105,18 +107,18 @@ void Scene_Main::sRender() {
 
 void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 	auto& playerInput = m_player->getComponent<CInput>();
-	auto& graphicsComponent = m_player->getComponent<CGraphics>();
+	auto& playerGraphics = m_player->getComponent<CGraphics>();
 	
 	sf::RectangleShape playerRect(sf::Vector2f(80, 80));
 	if (playerInput.up || playerInput.down || playerInput.left || playerInput.right) {
 
-		playerRect.setTexture(graphicsComponent.animation.getSprite().getTexture());
-		playerRect.setTextureRect(graphicsComponent.animation.getSprite().getTextureRect());
+		playerRect.setTexture(playerGraphics.animation.getSprite().getTexture());
+		playerRect.setTextureRect(playerGraphics.animation.getSprite().getTextureRect());
 
-		graphicsComponent.animation.update();
+		playerGraphics.animation.update();
 	}
 	else {
-		graphicsComponent.animation.reset();
+		playerGraphics.animation.reset();
 		playerRect.setTexture(&m_game->getAssets().getTexture(m_player->getComponent<CGraphics>().texture));
 	}
 
@@ -178,7 +180,7 @@ void Scene_Main::renderBoundingBox(const std::shared_ptr<Entity>& e) {
 
 	sf::RectangleShape boundingBox(sf::Vector2f(entityBoundingBox.size.x, entityBoundingBox.size.y));
 	boundingBox.setFillColor(sf::Color(255, 0, 0, 125));
-	auto& pos = entityBoundingBox.getTopLeftPos(entityTransform.getPos().x, entityTransform.getPos().y);
+	auto& pos = entityBoundingBox.getTopLeftPos(entityTransform.getPos());
 	boundingBox.setPosition(pos.x, pos.y);
 	m_game->getWindow().draw(boundingBox);
 
@@ -206,7 +208,9 @@ void Scene_Main::renderTransitionAnimation(bool fadeOut) {
 }
 
 void Scene_Main::sCollision() {
+	auto& playerBoundingBox = m_player->getComponent<CBoundingBox>();
 	auto& playerTransform = m_player->getComponent<CTransform>();
+	Vec2 playerBBPos = playerBoundingBox.getPos(playerTransform.getPos());
 
 	for (auto& e : m_entities.getEntities()) {
 
@@ -224,33 +228,34 @@ void Scene_Main::sCollision() {
 			continue;
 		}
 
-		if (!e->hasComponent<CBoundingBox>()) {
+		if (!e->hasComponent<CBoundingBox>() || !e->hasComponent<CTransform>()) {
 			continue;
 		}
-
-		auto& enemyTransform = e->getComponent<CTransform>();
 
 		Vec2 overlap = Physics::getOverlap(m_player, e);
 		Vec2 lastOverlap = Physics::getPreviousOverlap(m_player, e);
 
 		if (overlap.x > 0 && overlap.y > 0) {
 
+			auto& entityBoundingBox = e->getComponent<CBoundingBox>();
+			Vec2 entityBBPos = entityBoundingBox.getPos(e->getComponent<CTransform>().getPos());
+
 			bool vertically = lastOverlap.x > 0;
 			bool horizontally = lastOverlap.y > 0;
 			// came right
-			if (horizontally && playerTransform.getPos().x > enemyTransform.getPos().x) {
+			if (horizontally && playerBBPos.x > entityBBPos.x) {
 				playerTransform.setX(playerTransform.getPos().x + overlap.x);
 			}
 			// came left
-			else if (horizontally && playerTransform.getPos().x < enemyTransform.getPos().x) {
+			else if (horizontally && playerBBPos.x < entityBBPos.x) {
 				playerTransform.setX(playerTransform.getPos().x - overlap.x);
 			}
 			// came top
-			else if (vertically && playerTransform.getPos().y < enemyTransform.getPos().y) {
+			else if (vertically && playerBBPos.y < entityBBPos.y) {
 				playerTransform.setY(playerTransform.getPos().y - overlap.y);
 			}
 			//came bottom
-			else if (vertically && playerTransform.getPos().y > enemyTransform.getPos().y) {
+			else if (vertically && playerBBPos.y > entityBBPos.y) {
 				playerTransform.setY(playerTransform.getPos().y + overlap.y);
 			}
 		}
@@ -452,7 +457,8 @@ void Scene_Main::spawnPlayer() {
 	float mid_x = m_game->getWindow().getSize().x / 2.0f;
 	float mid_y = m_game->getWindow().getSize().y / 2.0f;
 
-	entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f, Vec2(80.0, 80.0));
+	auto& transform = entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f, Vec2(80.0, 80.0));
+	transform.zIndex = 1000; // Just a random high number to prevent entities to be drawn over it
 	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
 	entity->addComponent<CGraphics>("player");
@@ -465,6 +471,30 @@ void Scene_Main::spawnPlayer() {
 	stats.addAttack("Lightning", 10, CStats::LIGHTNING);
 
 	m_player = entity;
+}
+
+// Check if the player is above or below the other entity to make it appear as if the player goes behind the entity
+void Scene_Main::updateZIndexes() {
+	auto& playerTransform = m_player->getComponent<CTransform>();
+	Vec2 playerBBPos = m_player->getComponent<CBoundingBox>().getPos(playerTransform.getPos());
+
+	for (auto& e : m_entities.getEntities()) {
+		if ((!e->hasComponent<CBoundingBox>() || !e->hasComponent<CTransform>())
+			|| (e->hasComponent<CGraphics>() && e->getComponent<CGraphics>().background)
+			|| (e->getTag() == "player")) {
+			continue;
+		}
+
+		auto& entityTransform = e->getComponent<CTransform>();
+		Vec2 entityBBPos = e->getComponent<CBoundingBox>().getPos(entityTransform.getPos());
+
+		if (playerBBPos.y < entityBBPos.y) {
+			entityTransform.zIndex = playerTransform.zIndex + 1;
+		}
+		else {
+			entityTransform.zIndex = playerTransform.zIndex - 1;
+		}
+	}
 }
 
 void Scene_Main::onEnd() {

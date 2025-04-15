@@ -80,6 +80,7 @@ void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& enti
 			if (j["texture"] != "none") {
 				auto& graphics = e->addComponent<CGraphics>(j["texture"]);
 				graphics.repeated = m_assets.getTexture(j["texture"]).isRepeated();
+				graphics.background = j["background"];
 			}
 			auto& transform = e->addComponent<CTransform>(
 				Vec2(j["worldPos"]["x"].get<float>(), j["worldPos"]["y"].get<float>()),
@@ -87,6 +88,7 @@ void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& enti
 				0,
 				Vec2(j["size"]["w"].get<float>(), j["size"]["h"].get<float>()));
 			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
+			transform.zIndex = j["zIndex"];
 			if (j["boundingBox"]["w"].get<float>() > 0 && j["boundingBox"]["h"].get<float>() > 0) {
 				e->addComponent<CBoundingBox>(
 					Vec2(j["boundingBox"]["w"].get<float>(), j["boundingBox"]["h"].get<float>()),
@@ -107,8 +109,10 @@ void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& enti
 			}
 			auto& graphics = e->addComponent<CGraphics>(j["texture"], tiles);
 			graphics.textureMapStartingPos = Vec2(j["textureMapStartingPos"]["x"].get<float>(), j["textureMapStartingPos"]["y"].get<float>());
+			graphics.background = j["background"];
 			auto& transform = e->addComponent<CTransform>();
 			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
+			transform.zIndex = j["zIndex"];
 		}
 	}
 }

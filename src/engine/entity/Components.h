@@ -18,6 +18,7 @@ public:
 	Vec2 scale = { 1.0, 1.0 };
 	Vec2 velocity = { 0.0, 0.0 };
 	float angle = 0;
+	int zIndex = 0;
 
 	void setX(float x) {
 		prevPos.x = pos.x;
@@ -64,10 +65,16 @@ public:
 	// Offset der BoundingBox relativ zum Mittelpunkt
 	Vec2 relativePosition = Vec2(0, 0);
 
-	const Vec2& getTopLeftPos(float x, float y) const {
+	const Vec2& getTopLeftPos(const Vec2& transformPos) const {
 		return Vec2(
-			x - (size.x / 2) + relativePosition.x,
-			y - (size.y / 2) + relativePosition.y);
+			transformPos.x - (size.x / 2) + relativePosition.x,
+			transformPos.y - (size.y / 2) + relativePosition.y);
+	}
+
+	const Vec2& getPos(const Vec2& transformPos) const {
+		return Vec2(
+			transformPos.x + relativePosition.x,
+			transformPos.y + relativePosition.y);
 	}
 
 	CBoundingBox() {}
@@ -105,6 +112,8 @@ public:
 	std::vector<Tile> tiles;
 	Vec2 textureMapStartingPos = { 0.0, 0.0 };
 	bool textureMap = false;
+
+	bool background = false;
 	
 	Animation animation;
 	std::string texture;

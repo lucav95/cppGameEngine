@@ -5,9 +5,7 @@
 #include "../../systems/InventorySystem.h"
 
 class Scene_Main : public Scene {
-
-	Vec2								m_playerBox = Vec2(0.0f, 0.0f);
-	Vec2								m_enemyBox = Vec2(0.0f, 0.0f);
+	
 	TextBoxSystem						m_textBoxSys = nullptr;
 	std::shared_ptr<InventorySystem>	m_inventorySys;
 
@@ -38,6 +36,7 @@ class Scene_Main : public Scene {
 	void					fight();
 
 	void					cameraToPlayer();
+	void					updateZIndexes();
 	
 	//systems
 	void					sMovement(); 

@@ -43,7 +43,7 @@ void Scene_Fight::init() {
 }
 
 void Scene_Fight::getEnemy() {
-	int random = (std::rand() % 4) + 1; // 1 - 4
+	int random = (std::rand() % 5) + 1; // 1 - 5
 	m_enemy = m_entities.addEntity("fight_enemy");
 
 	switch (random) {
@@ -61,6 +61,10 @@ void Scene_Fight::getEnemy() {
 			break;
 		case 4:
 			m_enemy->addComponent<CGraphics>("girl_enemy");
+			m_enemy->addComponent<CStats>(70, 70, CStats::FIRE, CStats::ICE);
+			break;
+		case 5:
+			m_enemy->addComponent<CGraphics>("brain_baby");
 			m_enemy->addComponent<CStats>(70, 70, CStats::FIRE, CStats::ICE);
 			break;
 	}
