@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "../scenes/Scene_Menu.h"
+#include "FileSystem.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,107 +15,13 @@ GameEngine::GameEngine(
 void GameEngine::init(
 				const std::string& configPath, 
 				const std::string& dialogPath) {
-	loadAssets(configPath);
-	loadDialog(dialogPath);
+	FileSystem::loadAssets(configPath, m_assets, m_shader);
+	FileSystem::loadDialog(dialogPath, m_dialogMap);
 
 	m_window.create(sf::VideoMode(1280, 720), "Game", sf::Style::Close);
 	m_window.setFramerateLimit(60);
 	
 	changeScene("menu", std::make_shared<Scene_Menu>(this));
-}
-
-void GameEngine::loadAssets(const std::string& configPath) {
-	std::ifstream fin(configPath);
-	nlohmann::json json = nlohmann::json::parse(fin);
-	fin.close();
-
-	for (auto& j : json) {
-		if (j["type"] == "TEX") {
-			m_assets.addTexture(j["name"], j["path"], j["repeated"].get<bool>());
-		}
-		if (j["type"] == "ANI") {
-			m_assets.addTexture(j["name"], j["path"], false);
-			Animation animation = Animation(
-				j["name"], 
-				m_assets.getTexture(j["name"]), 
-				j["frameCount"].get<int>(), 
-				j["speed"].get<int>());
-			m_assets.addAnimation(j["name"], animation);
-		}
-		if (j["type"] == "FON") {
-			m_assets.addFont(j["name"], j["path"]);
-		}
-		if (j["type"] == "SHA") {
-			m_shader = j["path"].get<std::string>();
-		}
-	}
-}
-
-void GameEngine::loadDialog(const std::string& dialogPath) {
-	std::ifstream fin(dialogPath);
-
-	std::string line;
-	while (std::getline(fin, line)) {
-
-		std::stringstream stream(line);
-		std::vector<std::string> row;
-		std::string cell;
-		while (std::getline(stream, cell, ';')) {
-			row.push_back(cell);
-		}
-		m_dialogMap[row.at(0)] = row.at(1);
-	}
-	fin.close();
-}
-
-void GameEngine::loadGameMap(const std::string& gameMapPath, EntityManager& entities) {
-	std::fstream fin(gameMapPath);
-	nlohmann::json json = nlohmann::json::parse(fin);
-	fin.close();
-
-	for (auto& j : json) {
-		if (j["type"] == "RECT") {
-
-			auto e = entities.addEntity(j["name"]);
-
-			if (j["texture"] != "none") {
-				auto& graphics = e->addComponent<CGraphics>(j["texture"]);
-				graphics.repeated = m_assets.getTexture(j["texture"]).isRepeated();
-				graphics.background = j["background"];
-			}
-			auto& transform = e->addComponent<CTransform>(
-				Vec2(j["worldPos"]["x"].get<float>(), j["worldPos"]["y"].get<float>()),
-				Vec2(0.0, 0.0),
-				0,
-				Vec2(j["size"]["w"].get<float>(), j["size"]["h"].get<float>()));
-			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
-			transform.zIndex = j["zIndex"];
-			if (j["boundingBox"]["w"].get<float>() > 0 && j["boundingBox"]["h"].get<float>() > 0) {
-				e->addComponent<CBoundingBox>(
-					Vec2(j["boundingBox"]["w"].get<float>(), j["boundingBox"]["h"].get<float>()),
-					Vec2(j["boundingBox"]["relativeX"].get<float>(), j["boundingBox"]["relativeY"].get<float>()));
-			}
-		}
-		if (j["type"] == "TEX_MAP") {
-
-			auto e = entities.addEntity(j["name"]);
-
-			std::vector<CGraphics::Tile> tiles;
-			CGraphics::Tile tile;
-			for (auto& t : j["tiles"]) {
-				tile.textureSize = Vec2(t["textureSize"]["w"].get<float>(), t["textureSize"]["h"].get<float>());
-				tile.texturePos = Vec2(t["texturePos"]["x"].get<float>(), t["texturePos"]["y"].get<float>());
-				tile.posIndex = Vec2(t["posIndex"]["x"].get<float>(), t["posIndex"]["y"].get<float>());
-				tiles.push_back(tile);
-			}
-			auto& graphics = e->addComponent<CGraphics>(j["texture"], tiles);
-			graphics.textureMapStartingPos = Vec2(j["textureMapStartingPos"]["x"].get<float>(), j["textureMapStartingPos"]["y"].get<float>());
-			graphics.background = j["background"];
-			auto& transform = e->addComponent<CTransform>();
-			transform.setScale(j["scale"]["w"].get<float>(), j["scale"]["h"].get<float>());
-			transform.zIndex = j["zIndex"];
-		}
-	}
 }
 
 void GameEngine::run() {

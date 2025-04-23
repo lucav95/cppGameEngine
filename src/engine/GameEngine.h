@@ -21,8 +21,6 @@ class GameEngine {
 								const std::string& dialogPath);
 	void					update();
 	void					sUserInput();
-	void					loadAssets(const std::string& configPath);
-	void					loadDialog(const std::string& dialogPath);
 
 public:
 	GameEngine(
@@ -30,8 +28,7 @@ public:
 		const std::string& dialogPath);
 
 	std::string				m_shader;
-
-	void					loadGameMap(const std::string& gameMapPath, EntityManager& entities);
+	
 	void					changeScene(
 								const std::string& sceneName, 
 								std::shared_ptr<Scene> scene, 

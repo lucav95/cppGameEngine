@@ -37,11 +37,6 @@ public:
 		pos.y = y;
 	}
 
-	void setScale(float x, float y) {
-		scale.x = x;
-		scale.y = y;
-	}
-
 	Vec2& getPos() { return pos; }
 	Vec2& getPrevPos() { return prevPos; }
 
@@ -62,7 +57,7 @@ class CBoundingBox : public Component {
 public:
 	Vec2 size;
 	Vec2 halfSize;
-	// Offset der BoundingBox relativ zum Mittelpunkt
+	// Offset of BoundingBox relative to center
 	Vec2 relativePosition = Vec2(0, 0);
 
 	const Vec2& getTopLeftPos(const Vec2& transformPos) const {
@@ -128,32 +123,14 @@ public:
 };
 
 class CState : public Component {
-
-	std::string m_customState;
-	int m_status = NONE;
-
 public:
 	enum Status { NONE, POISONED, BURNING, FROZEN, PARALIZED };
-
-	void setCustomState(const std::string& state) {
-		m_customState = state;
-	}
-
-	void setStatus(int status) {
-		m_status = status;
-	}
-
-	const std::string& getCustomState() {
-		return m_customState;
-	}
-
-	int getStatus() {
-		return m_status;
-	}
+	int status = NONE;
+	std::string customState;
 
 	CState() {}
-	CState(const std::string& customState) : m_customState(customState) {}
-	CState(int status) : m_status(status) {}
+	CState(const std::string& customState) : customState(customState) {}
+	CState(int status) : status(status) {}
 };
 
 class CStats : public Component {

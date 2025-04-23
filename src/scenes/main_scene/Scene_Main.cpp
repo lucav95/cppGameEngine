@@ -3,6 +3,7 @@
 #include "../Scene_Fight.h"
 #include "../../engine/GameEngine.h"
 #include "../../engine/Physics.h"
+#include "../../engine/FileSystem.h"
 #include <iostream>
 #include <sstream>
 
@@ -36,13 +37,13 @@ void Scene_Main::init() {
 		sf::Vector2f(m_game->getWindow().getSize().x, m_game->getWindow().getSize().y));
 	m_game->getWindow().setView(m_camera);
 
-	m_game->setDebugMode(true);
+	m_game->setDebugMode(false);
 
 	m_shader.loadFromFile(m_game->m_shader, sf::Shader::Fragment);
 }
 
 void Scene_Main::loadMap(const std::string& path) {
-	m_game->loadGameMap(path, m_entities);
+	FileSystem::loadGameMap(path, m_entities, m_game->getAssets());
 }
 
 void Scene_Main::update() {
@@ -61,9 +62,7 @@ void Scene_Main::update() {
 }
 
 void Scene_Main::fight() {
-	m_transitionOpacity = 0;
-	m_sceneChanged = false;
-	m_player->getComponent<CState>().setCustomState("ready");
+	m_player->getComponent<CState>().customState = "ready";
 	m_fight = false;
 	m_game->changeScene("fight", std::make_shared<Scene_Fight>(m_game, m_player, m_inventorySys));
 }
@@ -99,6 +98,8 @@ void Scene_Main::sRender() {
 		renderTransitionAnimation(true);
 		if (m_transitionOpacity >= 255) {
 			m_fight = true;
+			m_sceneChanged = false;
+			m_transitionOpacity = 0;
 		}
 	}
 
@@ -124,7 +125,6 @@ void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 
 	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
 	playerRect.setPosition(pos.x, pos.y);
-	// Maybe draw the sprite without the playerRect
 	float time = m_clock.getElapsedTime().asSeconds();
 	m_shader.setUniform("u_time", time);
 	m_game->getWindow().draw(playerRect, &m_shader);
@@ -132,7 +132,6 @@ void Scene_Main::renderPlayer(const std::shared_ptr<Entity>& e) {
 
 void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
 	auto& transform = e->getComponent<CTransform>();
-	Vec2 pos = e->getComponent<CTransform>().getTopLeftPos();
 
 	// Draw tile maps
 	if (e->hasComponent<CGraphics>() && e->getComponent<CGraphics>().textureMap) {
@@ -154,7 +153,7 @@ void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
 	if (e->hasComponent<CGraphics>() && e->getComponent<CGraphics>().repeated) {
 		sf::Sprite sprite(m_game->getAssets().getTexture(e->getComponent<CGraphics>().texture));
 		sprite.setTextureRect(sf::IntRect(0, 0, transform.size.x, transform.size.y));
-		sprite.setPosition(pos.x, pos.y);
+		sprite.setPosition(transform.getPos().x, transform.getPos().y);
 		sprite.setScale(sf::Vector2f(transform.scale.x, transform.scale.y));
 
 		m_game->getWindow().draw(sprite);
@@ -162,7 +161,7 @@ void Scene_Main::renderEntity(const std::shared_ptr<Entity>& e) {
 	}
 
 	sf::RectangleShape rect(sf::Vector2f(transform.size.x, transform.size.y));
-	rect.setPosition(pos.x, pos.y);
+	rect.setPosition(transform.getTopLeftPos().x, transform.getTopLeftPos().y);
 	rect.setScale(sf::Vector2f(transform.scale.x, transform.scale.y));
 
 	if (e->hasComponent<CGraphics>()) {
@@ -269,7 +268,7 @@ void Scene_Main::sMovement() {
 	int x = 0;
 	int y = 0;
 
-	if (m_player->getComponent<CState>().getCustomState() == "freeze") {
+	if (m_player->getComponent<CState>().customState == "freeze") {
 		return;
 	}
 
@@ -310,8 +309,8 @@ void Scene_Main::sDoAction(const Action& action) {
 			float dist = m_player->getComponent<CTransform>().getPos().dist(e->getComponent<CTransform>().getPos());
 			if ((e->getTag() == "sign1" || e->getTag() == "sign2") && dist <= 40) {
 
-				if (playerState.getCustomState() == "ready") {
-					playerState.setCustomState("freeze");
+				if (playerState.customState == "ready") {
+					playerState.customState = "freeze";
 				}
 
 				if (m_textBoxSys.getText().empty()) {
@@ -324,7 +323,7 @@ void Scene_Main::sDoAction(const Action& action) {
 				else {
 					m_textBoxSys.setCurrentBox(0);
 					m_textBoxSys.setText("");
-					playerState.setCustomState("ready");
+					playerState.customState = "ready";
 				}
 			}
 		}
@@ -336,7 +335,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	auto& playerInput = m_player->getComponent<CInput>();
 
-	if (playerState.getCustomState() == "freeze") {
+	if (playerState.customState == "freeze") {
 		if (playerInput.up) {
 			playerInput.up = false;
 			m_player->getComponent<CGraphics>().texture = "player_up";
@@ -364,7 +363,7 @@ void Scene_Main::sDoAction(const Action& action) {
 
 	if (action.getName() == "FIGHT" && action.getType() == Action::START) {
 		m_sceneChanged = true;
-		playerState.setCustomState("freeze");
+		playerState.customState = "freeze";
 	}
 }
 
@@ -459,7 +458,7 @@ void Scene_Main::spawnPlayer() {
 
 	auto& transform = entity->addComponent<CTransform>(Vec2(mid_x, mid_y), Vec2(0.0f, 0.0f), 0.0f, Vec2(80.0, 80.0));
 	transform.zIndex = 1000; // Just a random high number to prevent entities to be drawn over it
-	entity->addComponent<CBoundingBox>(Vec2(80.0f, 40.0f), Vec2(0, 20.0f));
+	entity->addComponent<CBoundingBox>(Vec2(65.0f, 40.0f), Vec2(0, 20.0f));
 	entity->addComponent<CInput>();
 	entity->addComponent<CGraphics>("player");
 	entity->addComponent<CState>("ready");
@@ -490,9 +489,11 @@ void Scene_Main::updateZIndexes() {
 
 		if (playerBBPos.y < entityBBPos.y) {
 			entityTransform.zIndex = playerTransform.zIndex + 1;
+			m_entities.sortEntities();
 		}
 		else {
 			entityTransform.zIndex = playerTransform.zIndex - 1;
+			m_entities.sortEntities();
 		}
 	}
 }

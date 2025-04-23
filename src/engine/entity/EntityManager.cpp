@@ -20,7 +20,6 @@ void EntityManager::update() {
 
 	updateEntityMap();
 	m_totalEntities = m_entities.size();
-	sortEntities();
 }
 
 void EntityManager::updateEntityMap() {

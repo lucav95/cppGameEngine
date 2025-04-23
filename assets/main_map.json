@@ -6,12 +6,12 @@
     "zIndex": 0,
     "background": true,
     "worldPos": {
-      "x": 100,
-      "y": 680
+      "x": 520,
+      "y": -110
     },
     "size": {
-      "w": 250,
-      "h": 60
+      "w": 30,
+      "h": 120
     },
     "boundingBox": {
       "w": 0,
@@ -20,8 +20,8 @@
       "relativeY": 0
     },
     "scale": {
-      "w": 4.5,
-      "h": 4.5
+      "w": 4,
+      "h": 4
     }
   },
   "lantern": {
@@ -43,54 +43,6 @@
       "h": 60,
       "relativeX": 0,
       "relativeY": 130
-    },
-    "scale": {
-      "w": 1,
-      "h": 1
-    }
-  },
-  "enemy1": {
-    "type": "RECT",
-    "name": "enemy",
-    "texture": "none",
-    "zIndex": 100,
-    "worldPos": {
-      "x": 160,
-      "y": 300
-    },
-    "size": {
-      "w": 0,
-      "h": 0
-    },
-    "boundingBox": {
-      "w": 100,
-      "h": 300,
-      "relativeX": 0,
-      "relativeY": 0
-    },
-    "scale": {
-      "w": 1,
-      "h": 1
-    }
-  },
-  "enemy2": {
-    "type": "RECT",
-    "name": "enemy",
-    "texture": "none",
-    "zIndex": 100,
-    "worldPos": {
-      "x": 160,
-      "y": 300
-    },
-    "size": {
-      "w": 0,
-      "h": 0
-    },
-    "boundingBox": {
-      "w": 300,
-      "h": 100,
-      "relativeX": 0,
-      "relativeY": 0
     },
     "scale": {
       "w": 1,
@@ -198,26 +150,12 @@
         },
         "texturePos": {
           "x": 30,
-          "y": 90
-        }
-      },
-      {
-        "posIndex": {
-          "x": 0,
-          "y": 1
-        },
-        "textureSize": {
-          "w": 30,
-          "h": 30
-        },
-        "texturePos": {
-          "x": 30,
           "y": 0
         }
       },
       {
         "posIndex": {
-          "x": 1,
+          "x": 2,
           "y": 0
         },
         "textureSize": {
@@ -226,21 +164,7 @@
         },
         "texturePos": {
           "x": 90,
-          "y": 0
-        }
-      },
-      {
-        "posIndex": {
-          "x": 1,
-          "y": 1
-        },
-        "textureSize": {
-          "w": 30,
-          "h": 30
-        },
-        "texturePos": {
-          "x": 60,
-          "y": 30
+          "y": 60
         }
       }
     ]
